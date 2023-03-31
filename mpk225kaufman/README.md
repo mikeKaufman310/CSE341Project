@@ -7,3 +7,5 @@ Directory Structure:
 
 Makefile Instructions:
 
+Notes to Grader/Oddities:
+
