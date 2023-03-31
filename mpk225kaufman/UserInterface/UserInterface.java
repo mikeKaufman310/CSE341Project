@@ -23,7 +23,7 @@ public class UserInterface{
 
         System.out.println(password);//for test
         
-        try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
+        try( Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
             Statement s = con.createStatement();){
                 displayMenu();
         }

@@ -1,9 +1,7 @@
 Main: mpk225
 
 mpk225: jar
-	mkdir -p mpk225
-	mv UserInterface.class mpk225/UserInterface.class
-	mv Manifest.txt mpk225/Manifest.txt
+
 
 classCompile:
 	javac UserInterface.java
@@ -15,6 +13,5 @@ test:
 	java -jar UserInterface.jar
 
 clean:
-	mv mpk225/Manifest.txt Manifest.txt
-	rm -r mpk225
+	rm UserInterface.class
 	rm UserInterface.jar
