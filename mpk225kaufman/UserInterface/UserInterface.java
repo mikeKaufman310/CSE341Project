@@ -21,7 +21,6 @@ public class UserInterface{
         //NOTE: maybe loop  login attempts
         logIn();
 
-        System.out.println(password);//for test
         
         try( Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
             Statement s = con.createStatement();){
