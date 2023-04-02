@@ -33,6 +33,7 @@ public class UserInterface{
         catch(Exception e){
             System.out.println(e);      //NOTE: make good Exception Catch
         }
+        scan.close();
     }
 
     public static void displayLogo(){
@@ -52,7 +53,7 @@ public class UserInterface{
         System.out.println("6.  See Availability");
     }
 
-    public static String[] parseDate(String date){
+    public static String[] parseDateStringArr(String date){
         String[] dates = new String[3];//mm-dd-yy => mm is 0 and dd is 1 and y is 2 =. parse on -
         dates = date.split("-");
         /*String mm = dates[0];
@@ -118,13 +119,13 @@ public class UserInterface{
                 System.out.println("Invalid Input, Try Again");
             }
         }while(!go);
-        scan.close();
+        //scan.close();
         return choice;
     }
 
     public static void runOption(int choice){
         if(choice == 1){
-            makeReservation();
+            makeReservation(scan);
         }else if(choice == 2){
             checkIn();
         }else if(choice == 3){
@@ -138,8 +139,86 @@ public class UserInterface{
         }
     }
 
-    public static void makeReservation(){//need arguments
-        
+    public static void makeReservation(Scanner scan){//need arguments
+        //function to display properties and their ids for the clerks use
+        int pid = pid(scan);
+        //function to display room types for the clerks use
+        int rtid = rtid(scan);
+        String startDate = date(scan, "Start Date");
+        String endDate = date(scan, "End Date");
+
+
+        //call stored procedure at the end
+    }
+
+    public static String date(Scanner scan, String dateType){
+        boolean go = false;
+        String date = "";
+        do{
+            System.out.print("Enter " + dateType + "(mm-dd-yy):\t");
+            date = scan.next();
+            if(date.matches("(\\d{2}-\\d{2}-\\d{2})|(\\d{1}-\\d{2}-\\d{2})|(\\d{1}-\\d{1}-\\d{2})|(\\d{2}-\\d{1}-\\d{2})")){
+                //check if valid date using parseDate function
+                int[] checkDateArr = parseDate(date);
+                if((checkDateArr[0]>=1 && checkDateArr[0]<= 12)&&(checkDateArr[1]>=1 && checkDateArr[1]<=31)&&(checkDateArr[2]>=0 && checkDateArr[2]<=99)){
+                    go = true;
+                }else{
+                    System.out.println("\nInvalid Date, Try Again\n");
+                    date = "";
+                }
+            }else{
+                System.out.println("\nInvalid Date, Try Again\n");
+                date = "";
+            }
+        }while(!go);
+        return date;
+    }
+
+    public static int[] parseDate(String date){
+        int[] mmddyy = new int[3];
+        try{
+            String[] dateParts = date.split("-");
+            mmddyy[0] = Integer.parseInt(dateParts[0]);
+            mmddyy[1] = Integer.parseInt(dateParts[1]);
+            mmddyy[2] = Integer.parseInt(dateParts[2]);
+        }
+        catch(Exception e){
+            System.out.println("\nInvalid Date String\n");
+        }
+        return mmddyy;
+    }
+
+    public static int rtid(Scanner scan){
+        boolean go = false;//loop control var
+        int rtid;
+        do{
+            System.out.print("Enter Room Type ID:\t");
+            rtid = Integer.parseInt(scan.next());
+            if(rtid >= 1 && rtid <= 4){
+                go = true;
+            }else{
+                System.out.println("\nInvalid Room Type ID, Try Again\n");
+                rtid = 0;
+            }
+        }while(!go);
+        return rtid;
+    }
+
+
+    public static int pid(Scanner scan){
+        boolean go = false;//loop contorl var
+        int pid;
+        do{
+            System.out.print("Enter Property ID:\t");
+            pid = Integer.parseInt(scan.next());
+            if(pid >= 1 && pid <= 20){
+                go = true;
+            }else{
+                System.out.println("\nInvalid Property ID, Try Again\n");
+                pid = 0;
+            }
+        }while(!go);
+        return pid;
     }
 
     public static void checkIn(){//need argument
