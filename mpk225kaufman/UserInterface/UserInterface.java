@@ -146,9 +146,53 @@ public class UserInterface{
         int rtid = rtid(scan);
         String startDate = date(scan, "Start Date");
         String endDate = date(scan, "End Date");
+        int numPeople = numPeople(scan, rtid);
+        int dollarCost = dollarCostRes(startDate, endDate, rtid);
+        int pointCost = pointCostRes(startDate, endDate, rtid);
+        //customer id will be handled by stored procedure
+        
 
 
         //call stored procedure at the end
+    }
+
+    public static Integer dollarCostRes(String startDate, String endDate,int rtid){
+        //parse dates and find difference, multiply times current dollar rate, return
+        return null;
+    }
+
+    public static Integer pointCostRes(String startDate, String endDate, int rtid){
+        //parse dates and find difference, multiply times current point rate, and return
+        return null;
+    }
+
+    public static int numPeople(Scanner scan, int rtid){
+        boolean go = false;
+        int numPeople; 
+        do{
+            System.out.print("Enter Number of People Staying:\t");
+            try{
+                numPeople = Integer.parseInt(scan.next());
+            }
+            catch(Exception e){
+                System.out.println("\nInvalid Number of People, Try Again\n");
+                numPeople = 0;
+                continue;
+            }
+            if(rtid == 1 && numPeople >= 1 && numPeople<=2){
+                go = true;
+            }else if(rtid == 2 && numPeople >= 1 && numPeople <= 4){
+                go = true;
+            }else if(rtid == 3 && numPeople >= 1 && numPeople <= 4){
+                go = true;
+            }else if(rtid == 4 && numPeople >= 1 && numPeople <= 6){
+                go = true;
+            }else{
+                System.out.println("\nInvalid Number of People, Try Again\n");
+                numPeople = 0;
+            }
+        }while(!go);
+        return numPeople;
     }
 
     public static String date(Scanner scan, String dateType){
@@ -160,7 +204,7 @@ public class UserInterface{
             if(date.matches("(\\d{2}-\\d{2}-\\d{2})|(\\d{1}-\\d{2}-\\d{2})|(\\d{1}-\\d{1}-\\d{2})|(\\d{2}-\\d{1}-\\d{2})")){
                 //check if valid date using parseDate function
                 int[] checkDateArr = parseDate(date);
-                if((checkDateArr[0]>=1 && checkDateArr[0]<= 12)&&(checkDateArr[1]>=1 && checkDateArr[1]<=31)&&(checkDateArr[2]>=0 && checkDateArr[2]<=99)){
+                if((checkDateArr[0]>=1 && checkDateArr[0]<= 12)&&(checkDateArr[1]>=1 && checkDateArr[1]<=31)&&(checkDateArr[2]>=24 && checkDateArr[2]<=99)){//note only taking reservations after 2024
                     go = true;
                 }else{
                     System.out.println("\nInvalid Date, Try Again\n");
@@ -193,7 +237,14 @@ public class UserInterface{
         int rtid;
         do{
             System.out.print("Enter Room Type ID:\t");
-            rtid = Integer.parseInt(scan.next());
+            try{
+                rtid = Integer.parseInt(scan.next());
+            }
+            catch(Exception e){
+                System.out.println("\nInvalid Room Type ID, Try Again\n");
+                rtid = 0;
+                continue;
+            }
             if(rtid >= 1 && rtid <= 4){
                 go = true;
             }else{
@@ -210,7 +261,14 @@ public class UserInterface{
         int pid;
         do{
             System.out.print("Enter Property ID:\t");
-            pid = Integer.parseInt(scan.next());
+            try{
+                pid = Integer.parseInt(scan.next());
+            }
+            catch(Exception e){
+                System.out.println("\nInvalid Property ID, Try Again\n");
+                pid = 0;
+                continue;
+            }
             if(pid >= 1 && pid <= 20){
                 go = true;
             }else{
