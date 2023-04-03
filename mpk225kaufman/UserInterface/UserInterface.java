@@ -149,6 +149,8 @@ public class UserInterface{
         int numPeople = numPeople(scan, rtid);
         int dollarCost = dollarCostRes(startDate, endDate, rtid);
         int pointCost = pointCostRes(startDate, endDate, rtid);
+
+        //print out stats before calling stored procedure and acquire confirmation
         //customer id will be handled by stored procedure
         
 
@@ -156,14 +158,62 @@ public class UserInterface{
         //call stored procedure at the end
     }
 
-    public static Integer dollarCostRes(String startDate, String endDate,int rtid){
+    public static Integer dollarCostRes(String startDate, String endDate, int rtid){
         //parse dates and find difference, multiply times current dollar rate, return
-        return null;
+        int[] startArr = parseDate(startDate);
+        int[] endArr = parseDate(endDate);
+        int dol = 0;
+        int days = 0;
+        if(rtid == 1){
+            dol = 120;
+        }else if(rtid == 2){
+            dol = 200;
+        }else if(rtid == 3){
+            dol = 400;
+        }else{
+            dol = 800;
+        }
+        if(startArr[2] == endArr[2] && startArr[0] == endArr[0]){//same year and month
+            days = endArr[1] - startArr[1];
+        }else if(startArr[2] == endArr[2] && endArr[0] > startArr[0]){//same year different month
+            days = (31 - startArr[1]) + endArr[1] + 31*(endArr[0] - startArr[0] - 1);
+        }else if(startArr[2] < endArr[2]){//different years
+            days = (365*(endArr[2] - startArr[2])) + (31 - startArr[1]) + endArr[1] + 31*(endArr[0] - startArr[0] - 1);
+        }else{
+            //invalid date 
+            System.out.println("\nInvalid Date Entered\n");
+            return null;
+        }
+        return (days * dol);
     }
 
     public static Integer pointCostRes(String startDate, String endDate, int rtid){
         //parse dates and find difference, multiply times current point rate, and return
-        return null;
+        int[] startArr = parseDate(startDate);
+        int[] endArr = parseDate(endDate);
+        int dol = 0;
+        int days = 0;
+        if(rtid == 1){
+            dol = 5;
+        }else if(rtid == 2){
+            dol = 6;
+        }else if(rtid == 3){
+            dol = 8;
+        }else{
+            dol = 10;
+        }
+        if(startArr[2] == endArr[2] && startArr[0] == endArr[0]){//same year and month
+            days = endArr[1] - startArr[1];
+        }else if(startArr[2] == endArr[2] && endArr[0] > startArr[0]){//same year different month
+            days = (31 - startArr[1]) + endArr[1] + 31*(endArr[0] - startArr[0] - 1);
+        }else if(startArr[2] < endArr[2]){//different years
+            days = (365*(endArr[2] - startArr[2])) + (31 - startArr[1]) + endArr[1] + 31*(endArr[0] - startArr[0] - 1);
+        }else{
+            //invalid date 
+            System.out.println("\nInvalid Date Entered\n");
+            return null;
+        }
+        return (days * dol);
     }
 
     public static int numPeople(Scanner scan, int rtid){
