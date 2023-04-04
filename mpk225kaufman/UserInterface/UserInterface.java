@@ -24,7 +24,7 @@ public class UserInterface{
         System.out.println();
 
         
-        try( Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
+        try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
             Statement s = con.createStatement();){
                 displayMenu();
                 int choice = menuOption(scan);
@@ -135,20 +135,43 @@ public class UserInterface{
         }else if(choice == 5){
             payment();
         }else{
-            seeAvailablity();
+            seeAvailablity(scan);
         }
     }
 
     public static void makeReservation(Scanner scan){//need arguments
+        boolean bigGo = false;
+        do{
         //function to display properties and their ids for the clerks use
-        int pid = pid(scan);
-        //function to display room types for the clerks use
-        int rtid = rtid(scan);
-        String startDate = date(scan, "Start Date");
-        String endDate = date(scan, "End Date");
-        int numPeople = numPeople(scan, rtid);
-        int dollarCost = dollarCostRes(startDate, endDate, rtid);
-        int pointCost = pointCostRes(startDate, endDate, rtid);
+            int pid = pid(scan);
+            //function to display room types for the clerks use
+            int rtid = rtid(scan);
+            String startDate = date(scan, "Start Date");
+            String endDate = date(scan, "End Date");
+            int numPeople = numPeople(scan, rtid);
+            int dollarCost = dollarCostRes(startDate, endDate, rtid);
+            int pointCost = pointCostRes(startDate, endDate, rtid);
+            System.out.println("\nProperty ID:\t" + pid);
+            System.out.println("Room Type:\t" + rtid);
+            System.out.println("Start Date:\t" + startDate);
+            System.out.println("End Date:\t" + endDate);
+            System.out.println("Number of People:\t" + numPeople);
+            boolean go = false;
+            do{
+                System.out.print("Is this info correct?(y/n):\t");
+                String response = scan.next();
+                response = response.toLowerCase();
+                if(response.equals("y")){
+                    go = true;
+                    bigGo = true;
+                }else if(response.equals("n")){
+                    go = true;
+                }else{
+                    System.out.println("\nInvalid Response, Try Again\n");
+                    response = "";
+                }
+            }while(!go);
+        }while(!bigGo);
 
         //print out stats before calling stored procedure and acquire confirmation
         //customer id will be handled by stored procedure
@@ -330,7 +353,7 @@ public class UserInterface{
     }
 
     public static void checkIn(){//need argument
-    
+        
     }
 
     public static void checkOut(){//need arguments
@@ -345,7 +368,52 @@ public class UserInterface{
     
     }
 
-    public static void seeAvailablity(){//need arguments
-    
+    public static void seeAvailablity(Scanner scan){
+        boolean bigGo = false;
+        do{
+            boolean go = false;
+            int pid = pid(scan);
+            int roomNumber = roomNumber(scan, pid);//need to do query for this function?
+            //IMPLEMENT:    query to see if room is occupied
+            System.out.println("\nProperty ID:\t" + pid);
+            System.out.println("Room Number:\t" + roomNumber);
+            do{
+                System.out.print("Is this info correct?(y/n):\t");
+                String response = scan.next();
+                response = response.toLowerCase();
+                if(response.equals("y")){
+                    go = true;
+                    bigGo = true;
+                }else if(response.equals("n")){
+                    go = true;
+                }else{
+                    System.out.println("\nInvalid Response, Try Again\n");
+                    response = "";
+                }
+            }while(!go);
+        }while(!bigGo);
+    }
+
+    public static int roomNumber(Scanner scan, int pid){
+        boolean go = false;
+        int num = 0;
+        do{
+            System.out.print("Enter Room Number:\t");
+            try{
+                num = Integer.parseInt(scan.next());
+            }
+            catch(Exception e){
+                System.out.println("\nInvalid Input, Try Again\n");
+                continue;
+            }
+            boolean exists = false;//IMPLEMENT:     query to check if room number exists in pid
+            if(exists){
+                go = true;
+            }else{
+                System.out.println("\nInvalid Room Number, Try Again\n");
+                num = 0;
+            }
+        }while(!go);
+        return num;
     }
 }
