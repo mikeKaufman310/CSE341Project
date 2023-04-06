@@ -31,10 +31,16 @@ public class UserInterface{
                 String customerName = cidAndName[1];
                 if(cid == -1){//need a new customer id
                     //get new value for cid
-                    System.out.println("flag");//for test
-                    ResultSet maxCid = s.executeQuery("select max(c_id) from customer;");
-                    System.out.println("flag");//for test
-                    cid = Integer.parseInt(maxCid.getString("max(c_id)"));
+                    try{
+                        ResultSet maxCid = s.executeQuery("select max(c_id) from customer");
+                        if(maxCid.next())
+                            cid = Integer.parseInt(maxCid.getString("max(c_id)"));
+                    }
+                    catch(SQLException e){
+                        System.out.println();
+                    }
+                    customerName = name(scan);
+                    scan.nextLine();//buffer clear
                     String customerInsert = newCustomer(scan, cid, customerName);
                     s.executeUpdate(customerInsert);    
                 }
@@ -483,7 +489,7 @@ public class UserInterface{
     public static String newCustomer(Scanner scan, int cid, String name){
         String date = date(scan, "Today's Date");
         String addy = address(scan);
-        String q = "insert into customer values (" + cid + ", '" + date + "', '" + addy + "', '" + name + "');";
+        String q = "insert into customer values (" + cid + ", '" + date + "', '" + addy + "', '" + name + "')";
         return q;
     }
 
@@ -493,12 +499,29 @@ public class UserInterface{
         do{
             try{
                 System.out.print("Enter Customer Address:\t");
-                addy = scan.nextLine();
+                addy = scan.next();
+                go = true;
             }
             catch(Exception e){
                 System.out.println("\nInvalid Input, Try Again\n");
             }
         }while(!go);
         return addy;
+    }
+
+    public static String name(Scanner scan){
+        String name = "";
+        boolean go = false;
+        do{
+            try{
+                System.out.print("Enter Customer Name:\t");
+                name = scan.next();
+                go = true;
+            }
+            catch(Exception e){
+                System.out.println("\nInvalid Input, Try Again\n");
+            }
+        }while(!go);
+        return name;
     }
 }
