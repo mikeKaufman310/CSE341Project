@@ -26,13 +26,16 @@ public class UserInterface{
         
         try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
             Statement s = con.createStatement();){
+                String[] cidAndName = customer(scan);//to be parsed
+                int cid = 0;//initialized to 0 temporarily
+                String name;
                 displayMenu();
                 int choice = menuOption(scan);
-                String q = runOption(choice);
+                String q = runOption(choice, cid);
                 s.executeUpdate(q);
         }
         catch(Exception e){
-            System.out.println(e);      //NOTE: make good Exception Catch
+            System.out.println(e);      
         }
         scan.close();
     }
@@ -124,9 +127,9 @@ public class UserInterface{
         return choice;
     }
 
-    public static String runOption(int choice){
+    public static String runOption(int choice, int cid){
         if(choice == 1){
-            return makeReservation(scan);
+            return makeReservation(scan, cid);
         }else if(choice == 2){
             checkIn();
         }else if(choice == 3){
@@ -141,7 +144,7 @@ public class UserInterface{
         return null;//FOR TEST
     }
 
-    public static String makeReservation(Scanner scan){//need arguments
+    public static String makeReservation(Scanner scan, int cid){//need arguments
         boolean bigGo = false;
         int pid;
         int rtid;
@@ -183,11 +186,7 @@ public class UserInterface{
         }while(!bigGo);
 
         //print out stats before calling stored procedure and acquire confirmation
-        //customer id will be handled by stored procedure
-        int cid = -1;//FIGURE OUT HOW TO RUN THIS!
         
-        
-
 
         //call stored procedure at the end
         String q = "begin makereservation(" + pid + ", " + rtid + ", '" + startDate + "', '" + endDate + "', " + numPeople + ", " + dollarCost + ", " + pointCost + ", " + cid + "); end;";
@@ -431,8 +430,44 @@ public class UserInterface{
         return num;
     }
 
-    //function to see if someone is a previous customer returns cid
-    public int customer(Scanner scan){
-        return -1;
+    //function to see if someone is a previous customer returns cid NOTE: maybe run this before run option and put cid as arguments in subsequent functions
+    //if returned cid is -1 need new cid
+    public static String[] customer(Scanner scan){
+        boolean go = false;
+        int cid = -1;
+        String[] retArr = {" ", " "};
+        do{
+            try{
+                System.out.print("Past Customer?\t");
+                String response1 = scan.next();
+                String response2;
+                String response3;
+                response1 = response1.toLowerCase();
+                if(response1.equals("y")){
+                    System.out.print("\nInput Customer ID:\t");
+                    response2 = ((Integer)(Integer.parseInt(scan.next()))).toString();
+                    System.out.print("\nInput Customer Name:\t");
+                    response3 = scan.next();
+                    retArr[0] = response2;//String version of cid
+                    retArr[1] = response3;
+                    go = true;
+                }else if(response1.equals("no")){
+                    retArr[0] = "-1";
+                    retArr[1] = "-1";
+                    go = true;
+                }else{
+                    System.out.println("\nInvalid Response, Try Again\n");
+                }
+            }
+            catch(Exception e){
+                System.out.println("\nInvalid Response, Try Again\n");
+            }
+        }while(!go);
+        return retArr;
+    }
+
+    public static int parseCid(String cid){
+        int retCid = Integer.parseInt(cid);
+        return retCid;
     }
 }
