@@ -28,7 +28,8 @@ public class UserInterface{
             Statement s = con.createStatement();){
                 displayMenu();
                 int choice = menuOption(scan);
-                runOption(choice);
+                String q = runOption(choice);
+                s.executeUpdate(q);
         }
         catch(Exception e){
             System.out.println(e);      //NOTE: make good Exception Catch
@@ -123,9 +124,9 @@ public class UserInterface{
         return choice;
     }
 
-    public static void runOption(int choice){
+    public static String runOption(int choice){
         if(choice == 1){
-            makeReservation(scan);
+            return makeReservation(scan);
         }else if(choice == 2){
             checkIn();
         }else if(choice == 3){
@@ -137,20 +138,28 @@ public class UserInterface{
         }else{
             seeAvailablity(scan);
         }
+        return null;//FOR TEST
     }
 
-    public static void makeReservation(Scanner scan){//need arguments
+    public static String makeReservation(Scanner scan){//need arguments
         boolean bigGo = false;
+        int pid;
+        int rtid;
+        String startDate;
+        String endDate;
+        int numPeople;
+        int dollarCost;
+        int pointCost;
         do{
         //function to display properties and their ids for the clerks use
-            int pid = pid(scan);
+            pid = pid(scan);
             //function to display room types for the clerks use
-            int rtid = rtid(scan);
-            String startDate = date(scan, "Start Date");
-            String endDate = date(scan, "End Date");
-            int numPeople = numPeople(scan, rtid);
-            int dollarCost = dollarCostRes(startDate, endDate, rtid);
-            int pointCost = pointCostRes(startDate, endDate, rtid);
+            rtid = rtid(scan);
+            startDate = date(scan, "Start Date");
+            endDate = date(scan, "End Date");
+            numPeople = numPeople(scan, rtid);
+            dollarCost = dollarCostRes(startDate, endDate, rtid);
+            pointCost = pointCostRes(startDate, endDate, rtid);
             System.out.println("\nProperty ID:\t" + pid);
             System.out.println("Room Type:\t" + rtid);
             System.out.println("Start Date:\t" + startDate);
@@ -175,10 +184,15 @@ public class UserInterface{
 
         //print out stats before calling stored procedure and acquire confirmation
         //customer id will be handled by stored procedure
+        int cid = -1;//FIGURE OUT HOW TO RUN THIS!
+        
         
 
 
         //call stored procedure at the end
+        String q = "begin makereservation(" + pid + ", " + rtid + ", '" + startDate + "', '" + endDate + "', " + numPeople + ", " + dollarCost + ", " + pointCost + ", " + cid + "); end;";
+        //System.out.println(q);//for test
+        return q;
     }
 
     public static Integer dollarCostRes(String startDate, String endDate, int rtid){
