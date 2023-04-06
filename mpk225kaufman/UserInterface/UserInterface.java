@@ -430,4 +430,9 @@ public class UserInterface{
         }while(!go);
         return num;
     }
+
+    //function to see if someone is a previous customer returns cid
+    public int customer(Scanner scan){
+        return -1;
+    }
 }
