@@ -31,7 +31,9 @@ public class UserInterface{
                 String customerName = cidAndName[1];
                 if(cid == -1){//need a new customer id
                     //get new value for cid
+                    System.out.println("flag");//for test
                     ResultSet maxCid = s.executeQuery("select max(c_id) from customer;");
+                    System.out.println("flag");//for test
                     cid = Integer.parseInt(maxCid.getString("max(c_id)"));
                     String customerInsert = newCustomer(scan, cid, customerName);
                     s.executeUpdate(customerInsert);    
@@ -445,7 +447,7 @@ public class UserInterface{
         String[] retArr = {" ", " "};
         do{
             try{
-                System.out.print("Past Customer?\t");
+                System.out.print("Past Customer? (y/n)\t");
                 String response1 = scan.next();
                 String response2;
                 String response3;
@@ -458,7 +460,7 @@ public class UserInterface{
                     retArr[0] = response2;//String version of cid
                     retArr[1] = response3;
                     go = true;
-                }else if(response1.equals("no")){
+                }else if(response1.equals("n")){
                     retArr[0] = "-1";
                     retArr[1] = "-1";
                     go = true;
