@@ -27,8 +27,15 @@ public class UserInterface{
         try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
             Statement s = con.createStatement();){
                 String[] cidAndName = customer(scan);//to be parsed
-                int cid = 0;//initialized to 0 temporarily
-                String name;
+                int cid = parseCid(cidAndName[0]);
+                String customerName = cidAndName[1];
+                if(cid == -1){//need a new customer id
+                    //get new value for cid
+                    ResultSet maxCid = s.executeQuery("select max(c_id) from customer;");
+                    cid = Integer.parseInt(maxCid.getString("max(c_id)"));
+                    String customerInsert = newCustomer(scan, cid, customerName);
+                    s.executeUpdate(customerInsert);    
+                }
                 displayMenu();
                 int choice = menuOption(scan);
                 String q = runOption(choice, cid);
@@ -469,5 +476,27 @@ public class UserInterface{
     public static int parseCid(String cid){
         int retCid = Integer.parseInt(cid);
         return retCid;
+    }
+
+    public static String newCustomer(Scanner scan, int cid, String name){
+        String date = date(scan, "Today's Date");
+        String addy = address(scan);
+        String q = "insert into customer values (" + cid + ", '" + date + "', '" + addy + "', '" + name + "');";
+        return q;
+    }
+
+    public static String address(Scanner scan){
+        boolean go = false;
+        String addy = "";
+        do{
+            try{
+                System.out.print("Enter Customer Address:\t");
+                addy = scan.nextLine();
+            }
+            catch(Exception e){
+                System.out.println("\nInvalid Input, Try Again\n");
+            }
+        }while(!go);
+        return addy;
     }
 }
