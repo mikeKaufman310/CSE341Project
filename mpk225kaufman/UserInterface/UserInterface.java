@@ -43,14 +43,19 @@ public class UserInterface{
                     scan.nextLine();//buffer clear
                     String customerInsert = newCustomer(scan, cid, customerName);
                     s.executeUpdate(customerInsert);    
-                }
+                }else if(cid == -23){
+                    System.out.println("\nUI Test Mode Engaged\n");
+                }//else check if cid matches one in system OR just say in readme that all customers are honest too idk
                 displayMenu();
                 int choice = menuOption(scan);
                 String q = runOption(choice, cid);
                 s.executeUpdate(q);
+                con.close();
+                System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
         }
         catch(Exception e){
-            System.out.println(e);      
+            System.out.println(e);
+            System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");      
         }
         scan.close();
     }
@@ -146,7 +151,7 @@ public class UserInterface{
         if(choice == 1){
             return makeReservation(scan, cid);
         }else if(choice == 2){
-            checkIn();
+            return checkIn(scan);
         }else if(choice == 3){
             checkOut();
         }else if(choice == 4){
@@ -380,8 +385,61 @@ public class UserInterface{
         return pid;
     }
 
-    public static void checkIn(){//need argument
-        
+    public static String checkIn(Scanner scan){//need argument
+        boolean bigGo = false;
+        int resid;
+        int pid;
+        String date;
+        do{
+            resid = resid(scan);
+            pid = pid(scan);
+            date = date(scan, "Today's Date");
+            boolean go = false;
+            do{
+                try{
+                    System.out.println("\nReservation ID:\t" + resid);
+                    System.out.println("Property ID: \t" + pid);
+                    System.out.println("Date of Reservation:\t" + date + "\n");
+                    System.out.print("Is this correct? (y/n):\t");
+                    String response = scan.next();
+                    response = response.toLowerCase();
+                    if(response.equals("y")){
+                        go = true;
+                        bigGo = true;
+                    }else if(response.equals("n")){
+                        go = true;
+                    }else{
+                        throw new Exception("Invalid");
+                    }
+                }
+                catch(Exception e){
+                    System.out.println("\nInvalid Input, Try Again\n");
+                }
+            }while(!go);
+            //figure out room number in stored procedure
+        }while(!bigGo);
+        String q = "begin makeCheckIn (" + resid + ", " + pid + ", " + date + "); end;";
+        return q;
+    }
+
+    public static int resid(Scanner scan){
+        boolean go = false;
+        int resid = 0;
+        do{
+            try{
+                System.out.print("Input Reservation ID:\t");
+                resid = Integer.parseInt(scan.next());
+                if(resid > 0){
+                    go = true;
+                }else{
+                    throw new Exception("invalid");
+                }
+            }
+            catch(Exception e){
+                System.out.println("\nInvalid Reservation ID, Try Again");
+            }
+        }while(!go);
+        return resid;
     }
 
     public static void checkOut(){//need arguments
@@ -470,6 +528,9 @@ public class UserInterface{
                     retArr[0] = "-1";
                     retArr[1] = "-1";
                     go = true;
+                }else if(response1.equals("test")){
+                    go = true;
+                    retArr[0] = "-23";
                 }else{
                     System.out.println("\nInvalid Response, Try Again\n");
                 }
