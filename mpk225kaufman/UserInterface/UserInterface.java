@@ -153,7 +153,7 @@ public class UserInterface{
         }else if(choice == 2){
             return checkIn(scan);
         }else if(choice == 3){
-            checkOut();
+            return checkOut(scan);
         }else if(choice == 4){
             cancellation();
         }else if(choice == 5){
@@ -398,7 +398,7 @@ public class UserInterface{
             do{
                 try{
                     System.out.println("\nReservation ID:\t" + resid);
-                    System.out.println("Property ID: \t" + pid);
+                    System.out.println("Property ID:\t" + pid);
                     System.out.println("Date of Reservation:\t" + date + "\n");
                     System.out.print("Is this correct? (y/n):\t");
                     String response = scan.next();
@@ -442,8 +442,43 @@ public class UserInterface{
         return resid;
     }
 
-    public static void checkOut(){//need arguments
-    
+    public static String checkOut(Scanner scan){//need arguments
+        boolean bigGo = false;
+        int resid;
+        int pid;
+        String date;
+        int roomNum;
+        do{
+            resid = resid(scan);
+            pid = pid(scan);
+            date = date(scan, "Today's Date");
+            roomNum = roomNumber(scan, pid);
+            boolean go = false;
+            do{
+                try{
+                    System.out.println("\nReservation ID:\t" + resid);
+                    System.out.println("Property ID:\t" + pid);
+                    System.out.println("Date of Reservation:\t" + date);
+                    System.out.println("Room Number:\t" + roomNum);
+                    System.out.print("\nIs this correct? (y/n):\t");
+                    String response = scan.next();
+                    response = response.toLowerCase();
+                    if(response.equals("y")){
+                        go = true;
+                        bigGo = true;
+                    }else if(response.equals("n")){
+                        go = true;
+                    }else{
+                        throw new Exception("Invalid");
+                    }
+                }
+                catch(Exception e){
+                    System.out.println("\nInvalid Input, Try Again\n");
+                }
+            }while(!go);
+        }while(!bigGo);
+        String q = "begin makeCheckOut (" + resid + ", " + pid + ", " + date + ", " + roomNum +"); end;";
+        return q;
     }
 
     public static void cancellation(){//need argument
@@ -492,7 +527,7 @@ public class UserInterface{
                 System.out.println("\nInvalid Input, Try Again\n");
                 continue;
             }
-            boolean exists = false;//IMPLEMENT:     query to check if room number exists in pid
+            boolean exists = true;//IMPLEMENT:     query to check if room number exists in pid or say in readme that the room number will always exist because we only deal with perfectly honest and remembering customers
             if(exists){
                 go = true;
             }else{
