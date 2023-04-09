@@ -155,7 +155,7 @@ public class UserInterface{
         }else if(choice == 3){
             return checkOut(scan);
         }else if(choice == 4){
-            cancellation();
+            return cancellation(scan);
         }else if(choice == 5){
             payment();
         }else{
@@ -481,8 +481,43 @@ public class UserInterface{
         return q;
     }
 
-    public static void cancellation(){//need argument
-    
+    public static String cancellation(Scanner scan){//need argument
+        boolean bigGo = false;
+        int resid;
+        int pid;
+        String date;
+        int roomNum;
+        do{
+            resid = resid(scan);
+            pid = pid(scan);
+            date = date(scan, "the Date of Reservation");
+            roomNum = roomNumber(scan, pid);
+            boolean go = false;
+            do{
+                try{
+                    System.out.println("\nReservation ID:\t" + resid);
+                    System.out.println("Property ID:\t" + pid);
+                    System.out.println("Date of Reservation:\t" + date);
+                    System.out.println("Room Number:\t" + roomNum);
+                    System.out.print("\nIs this correct? (y/n):\t");
+                    String response = scan.next();
+                    response = response.toLowerCase();
+                    if(response.equals("y")){
+                        go = true;
+                        bigGo = true;
+                    }else if(response.equals("n")){
+                        go = true;
+                    }else{
+                        throw new Exception("Invalid");
+                    }
+                }
+                catch(Exception e){
+                    System.out.println("\nInvalid Input, Try Again\n");
+                }
+            }while(!go);
+        }while(!bigGo);
+        String q = "begin makeCancel (" + resid + ", " + pid + ", " + date + ", " + roomNum + "); end;";
+        return q;
     }
 
     public static void payment(){//need arguments
