@@ -48,6 +48,11 @@ public class UserInterface{
                 }//else check if cid matches one in system OR just say in readme that all customers are honest too idk
                 displayMenu();
                 int choice = menuOption(scan);
+                if(choice == 7){
+                    con.close();
+                    System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
+                    System.exit(0);
+                }
                 String q = runOption(choice, cid);
                 s.executeUpdate(q);
                 con.close();
@@ -75,6 +80,7 @@ public class UserInterface{
         System.out.println("4.  Cancellation");
         System.out.println("5.  Pay");
         System.out.println("6.  See Availability");
+        System.out.println("7.  Exit");
     }
 
     public static String[] parseDateStringArr(String date){
@@ -128,11 +134,11 @@ public class UserInterface{
         System.out.println();
         do{
             try{
-                System.out.print("Enter a Choice (1-6):\t");
+                System.out.print("Enter a Choice (1-7):\t");
                 //scan.next();
                 String tempChoiceString = scan.next();
                 int tempChoice = Integer.parseInt(tempChoiceString);
-                if(tempChoice >= 1 && tempChoice <= 6){
+                if(tempChoice >= 1 && tempChoice <= 7){
                     choice = tempChoice;
                     go = true;
                 }else{
@@ -157,7 +163,7 @@ public class UserInterface{
         }else if(choice == 4){
             return cancellation(scan);
         }else if(choice == 5){
-            payment();
+            return payment(scan, cid);
         }else{
             seeAvailablity(scan);
         }
@@ -520,9 +526,44 @@ public class UserInterface{
         return q;
     }
 
-    public static void payment(){//need arguments
-    
+    public static String payment(Scanner scan, int cid){//need arguments
+        boolean bigGo = false;
+        int pid;
+        String date;
+        int roomNum;
+        do{
+            boolean go = false;
+            pid = pid(scan);
+            date = date(scan, "Today's Date");
+            roomNum = roomNumber(scan, pid);
+            do{
+                try{
+                    System.out.println("\nProperty ID:\t" + pid);
+                    System.out.println("Date of Transaction:\t" + date);
+                    System.out.println("Customer ID:\t" + cid);
+                    System.out.println("Room Number:\t" + roomNum);
+                    System.out.print("\nIs this info correct? (y/n):\t");
+                    String response = scan.next();
+                    response = response.toLowerCase();
+                    if(response.equals("y")){
+                        go = true;
+                        bigGo = true;
+                    }else if(response.equals("n")){
+                        go = true;
+                    }else{
+                        throw new Exception("Invalid");
+                    }
+                }
+                catch(Exception e){
+                    System.out.println("\nInvalid Input, Try Again\n");
+                }
+            }while(!go);
+        }while(!bigGo);
+        String q = "begin makeTx (" + pid + ", " + date + ", " + cid + ", " + roomNum + "); end;";
+        return q;
     }
+
+    
 
     public static void seeAvailablity(Scanner scan){
         boolean bigGo = false;
@@ -534,7 +575,7 @@ public class UserInterface{
             System.out.println("\nProperty ID:\t" + pid);
             System.out.println("Room Number:\t" + roomNumber);
             do{
-                System.out.print("Is this info correct?(y/n):\t");
+                System.out.print("Is this info correct? (y/n):\t");
                 String response = scan.next();
                 response = response.toLowerCase();
                 if(response.equals("y")){
@@ -548,6 +589,8 @@ public class UserInterface{
                 }
             }while(!go);
         }while(!bigGo);
+
+        //NEED TO WRITE A STRING TO CALL PROCEDURE IN MAIN METHOD TO SEE IF ROOM NUMBER AT PROPERTY IS AVAILABLE
     }
 
     public static int roomNumber(Scanner scan, int pid){
