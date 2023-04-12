@@ -19,49 +19,61 @@ public class UserInterface{
     public static void main(String[] args){
         //display logo
         displayLogo();
-        //NOTE: maybe loop  login attempts and handle wrong password
-        logIn(scan);
-        System.out.println();
-
+        boolean go = true;;// var for failed password //NOTE: maybe loop  login attempts and handle wrong password
         
-        try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
-            Statement s = con.createStatement();){
-                String[] cidAndName = customer(scan);//to be parsed
-                int cid = parseCid(cidAndName[0]);
-                String customerName = cidAndName[1];
-                if(cid == -1){//need a new customer id
-                    //get new value for cid
-                    try{
-                        ResultSet maxCid = s.executeQuery("select max(c_id) from customer");
-                        if(maxCid.next())
-                            cid = Integer.parseInt(maxCid.getString("max(c_id)"));
+        do{
+            logIn(scan);
+            System.out.println();
+            try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
+                Statement s = con.createStatement();){
+                    String[] cidAndName = customer(scan);//to be parsed
+                    int cid = parseCid(cidAndName[0]);
+                    String customerName = cidAndName[1];
+                    if(cid == -1){//need a new customer id
+                        //get new value for cid
+                        try{
+                            ResultSet maxCid = s.executeQuery("select max(c_id) from customer");
+                            if(maxCid.next())
+                                cid = Integer.parseInt(maxCid.getString("max(c_id)"));
+                        }
+                        catch(SQLException e){
+                            System.out.println();
+                        }
+                        customerName = name(scan);
+                        scan.nextLine();//buffer clear
+                        String customerInsert = newCustomer(scan, cid, customerName);
+                        s.executeUpdate(customerInsert);    
+                    }else if(cid == -23){
+                        System.out.println("\nUI Test Mode Engaged\n");
+                    }//else check if cid matches one in system OR just say in readme that all customers are honest too idk
+                    displayMenu();
+                    int choice = menuOption(scan);
+                    if(choice == 7){
+                        con.close();
+                        System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
+                        System.exit(0);
                     }
-                    catch(SQLException e){
-                        System.out.println();
-                    }
-                    customerName = name(scan);
-                    scan.nextLine();//buffer clear
-                    String customerInsert = newCustomer(scan, cid, customerName);
-                    s.executeUpdate(customerInsert);    
-                }else if(cid == -23){
-                    System.out.println("\nUI Test Mode Engaged\n");
-                }//else check if cid matches one in system OR just say in readme that all customers are honest too idk
-                displayMenu();
-                int choice = menuOption(scan);
-                if(choice == 7){
+                    String q = runOption(choice, cid);
+                    s.executeUpdate(q);
                     con.close();
                     System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
-                    System.exit(0);
+                    go = true;
+            }
+            catch(SQLException e){
+                if(e.getErrorCode() == 1017){
+                    System.out.println("\nInvalid Login Attempt, Try Again\n");
+                    go = false;
+                }else{
+                    System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
+                    go = true;
                 }
-                String q = runOption(choice, cid);
-                s.executeUpdate(q);
-                con.close();
+            }
+            catch(Exception e){
+                System.out.println(e);
                 System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
-        }
-        catch(Exception e){
-            System.out.println(e);
-            System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");      
-        }
+                go = true;      
+            }
+        }while(!go);
         scan.close();
     }
 
