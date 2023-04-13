@@ -10,6 +10,9 @@ public class UserInterface{
     static String password = "";
     static String userName = "";
     static Scanner scan = new Scanner(System.in);
+    static final int[] userInterfaces = {1, 2, 3};//array to determine which interface (front desk clerk, housekeeping, etc.)
+    //1 is customer reservations, 2 is front desk clerk, 3 is housing service, 4 is business analytics
+    static int userInterface = 0;
 
 
     /**
@@ -46,14 +49,15 @@ public class UserInterface{
                     }else if(cid == -23){
                         System.out.println("\nUI Test Mode Engaged\n");
                     }//else check if cid matches one in system OR just say in readme that all customers are honest too idk
-                    displayMenu();
-                    int choice = menuOption(scan);
-                    if(choice == 7){
+                    int option = displayUserInterfaceOptions(scan);
+                    displayMenu(option);
+                    int choice = menuOption(scan, option);
+                    if((option == 1 && choice == 7) || (option != 1 && choice == 2)){
                         con.close();
                         System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
                         System.exit(0);
                     }
-                    String q = runOption(choice, cid);
+                    String q = runOption(choice, cid, option);
                     s.executeUpdate(q);
                     con.close();
                     System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
@@ -83,16 +87,49 @@ public class UserInterface{
         System.out.println("\n---------------------------------------------------------------\n\n");
     }
 
-    public static void displayMenu(){
+    public static int displayUserInterfaceOptions(Scanner scan){
+        boolean go = false;
+        int option = 0;
+        do{
+            System.out.println("1.  Front Desk Clerk");
+            System.out.println("2.  Housekeeping");
+            System.out.println("3.  Business Analytics\n");
+            try{
+                System.out.print("Enter Interface Option:\t");
+                option = Integer.parseInt(scan.next());
+                if(option >= 1 && option <= 3){
+                    go = true;
+                }else{
+                    throw new Exception("invalid");
+                }
+            }
+            catch(Exception e){
+                System.out.println("\nInvalid Option, Try Again\n");
+            }
+        }while(!go);
+        return option;
+    }
+
+    //need to update based on interface number
+    public static void displayMenu(int option){
         System.out.println("Menu:");
         System.out.println("--------------------");
-        System.out.println("1.  Make Reservation");
-        System.out.println("2.  Check In");
-        System.out.println("3.  Check Out");
-        System.out.println("4.  Cancellation");
-        System.out.println("5.  Pay");
-        System.out.println("6.  See Availability");
-        System.out.println("7.  Exit");
+        if(option == 1){
+            System.out.println("1.  Make Reservation");
+            System.out.println("2.  Check In");
+            System.out.println("3.  Check Out");
+            System.out.println("4.  Cancellation");
+            System.out.println("5.  Pay");
+            System.out.println("6.  See Availability");
+            System.out.println("7.  Exit");
+        }else if(option == 2){
+            System.out.println("1.  Mark Room As Clean");
+            System.out.println("2.  Exit");
+        }else if(option == 3){
+            System.out.println("1.  See Statistics");
+            System.out.println("2.  Exit");
+        }
+        
     }
 
     public static String[] parseDateStringArr(String date){
@@ -140,17 +177,27 @@ public class UserInterface{
         return false;//set false for testing before implementation
     }
 
-    public static int menuOption(Scanner scan){
+    public static int menuOption(Scanner scan, int option){
         int choice = -1;//-1 if no choice made
         boolean go = false;//loop control boolean
         System.out.println();
         do{
             try{
-                System.out.print("Enter a Choice (1-7):\t");
+                if(option == 1){
+                    System.out.print("Enter a Choice (1-7):\t");
+                }else{
+                    System.out.print("Enter a Choice (1-2):\t");
+                }
                 //scan.next();
                 String tempChoiceString = scan.next();
                 int tempChoice = Integer.parseInt(tempChoiceString);
-                if(tempChoice >= 1 && tempChoice <= 7){
+                if(option == 1 && tempChoice >= 1 && tempChoice <= 7){
+                    choice = tempChoice;
+                    go = true;
+                }else if(option == 2 && tempChoice >= 1 && tempChoice <= 2){
+                    choice = tempChoice;
+                    go = true;
+                }else if(option == 3 && tempChoice >= 1 && tempChoice <= 2){
                     choice = tempChoice;
                     go = true;
                 }else{
@@ -165,21 +212,33 @@ public class UserInterface{
         return choice;
     }
 
-    public static String runOption(int choice, int cid){
-        if(choice == 1){
+    public static String runOption(int choice, int cid, int option){
+        if(option == 1 && choice == 1){
             return makeReservation(scan, cid);
-        }else if(choice == 2){
+        }else if(option == 1 && choice == 2){
             return checkIn(scan);
-        }else if(choice == 3){
+        }else if(option == 1 && choice == 3){
             return checkOut(scan);
-        }else if(choice == 4){
+        }else if(option == 1 && choice == 4){
             return cancellation(scan);
-        }else if(choice == 5){
+        }else if(option == 1 && choice == 5){
             return payment(scan, cid);
-        }else{
+        }else if(option == 1 &&  choice == 6){
             seeAvailablity(scan);
+        }else if(option == 2 && choice == 1){
+            cleanRoom(scan);
+        }else{
+            businessAnalytics();
         }
         return null;//FOR TEST
+    }
+
+    public static void cleanRoom(Scanner scan){
+
+    }
+
+    public static void businessAnalytics(){
+        
     }
 
     public static String makeReservation(Scanner scan, int cid){//need arguments
