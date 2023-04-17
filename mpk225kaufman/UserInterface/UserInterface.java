@@ -11,7 +11,7 @@ public class UserInterface{
     static String userName = "";
     static Scanner scan = new Scanner(System.in);
     static final int[] userInterfaces = {1, 2, 3};//array to determine which interface (front desk clerk, housekeeping, etc.)
-    //1 is customer reservations, 2 is front desk clerk, 3 is housing service, 4 is business analytics
+    //1 is front desk clerk, 2 is house keeping, 3 is business analytics
     static int userInterface = 0;
 
 
@@ -226,19 +226,27 @@ public class UserInterface{
         }else if(option == 1 &&  choice == 6){
             seeAvailablity(scan);
         }else if(option == 2 && choice == 1){
-            cleanRoom(scan);
+            return cleanRoom(scan);
         }else{
             businessAnalytics();
         }
         return null;//FOR TEST
     }
 
-    public static void cleanRoom(Scanner scan){
-
+    public static String cleanRoom(Scanner scan){
+        int pid = pid(scan);
+        int roomNum = roomNumber(scan, pid);
+        System.out.println("\nRoom " + roomNum + " Updated as Clean\n");
+        String q = "begin cleanRoom (" + pid + ", " + roomNum + "); end;";
+        return q;
     }
 
     public static void businessAnalytics(){
-        
+
+    }
+
+    public static void displayProperties(){
+
     }
 
     public static String makeReservation(Scanner scan, int cid){//need arguments
