@@ -249,7 +249,28 @@ public class UserInterface{
     }
 
     public static void displayProperties(){
-
+        System.out.println("Properties:");
+        System.out.println("--------------------");
+        System.out.println("Property_ID:\t1\tCity:\tBradenton, FL");
+        System.out.println("Property_ID:\t2\tCity:\tWillingboro, NJ");
+        System.out.println("Property_ID:\t3\tCity:\tFayvill, NC");
+        System.out.println("Property_ID:\t4\tCity:\tLagrange, GA");
+        System.out.println("Property_ID:\t5\tCity:\tOntario, CA");
+        System.out.println("Property_ID:\t6\tCity:\tKey West, FL");
+        System.out.println("Property_ID:\t7\tCity:\tMillin, TN");
+        System.out.println("Property_ID:\t8\tCity:\tEvanston, IL");
+        System.out.println("Property_ID:\t9\tCity:\tMillvill, NJ");
+        System.out.println("Property_ID:\t10\tCity:\tCoventry, RI");
+        System.out.println("Property_ID:\t11\tCity:\tPowell, TN");
+        System.out.println("Property_ID:\t12\tCity:\tWinder, GA");
+        System.out.println("Property_ID:\t13\tCity:\tMacomb, MI");
+        System.out.println("Property_ID:\t14\tCity:\tLacey, WA");
+        System.out.println("Property_ID:\t15\tCity:\tAndover, MA");
+        System.out.println("Property_ID:\t16\tCity:\tPensacola, FL");
+        System.out.println("Property_ID:\t17\tCity:\tNatick, MA");
+        System.out.println("Property_ID:\t18\tCity:\tOlney, MD");
+        System.out.println("Property_ID:\t19\tCity:\tRoy, UT");
+        System.out.println("Property_ID:\t20\tCity:\tTiffin, OH");
     }
 
     public static String makeReservation(Scanner scan, int cid){//need arguments
@@ -451,6 +472,7 @@ public class UserInterface{
 
 
     public static int pid(Scanner scan){
+        displayProperties();
         boolean go = false;//loop contorl var
         int pid;
         do{
