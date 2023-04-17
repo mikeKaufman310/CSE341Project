@@ -671,10 +671,12 @@ public class UserInterface{
 
     public static void seeAvailablity(Scanner scan){
         boolean bigGo = false;
+        int pid;
+        int roomNumber;
         do{
             boolean go = false;
-            int pid = pid(scan);
-            int roomNumber = roomNumber(scan, pid);//need to do query for this function?
+            pid = pid(scan);
+            roomNumber = roomNumber(scan, pid);//need to do query for this function?
             //IMPLEMENT:    query to see if room is occupied
             System.out.println("\nProperty ID:\t" + pid);
             System.out.println("Room Number:\t" + roomNumber);
@@ -695,6 +697,27 @@ public class UserInterface{
         }while(!bigGo);
 
         //NEED TO WRITE A STRING TO CALL PROCEDURE IN MAIN METHOD TO SEE IF ROOM NUMBER AT PROPERTY IS AVAILABLE
+        try (
+         Connection con=DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
+         Statement s=con.createStatement();
+        ){
+            ResultSet result;
+            String q = "select cleanoccupiedbool from room where p_id = " + pid + " and room_number = " + roomNumber;
+            result = s.executeQuery(q);
+            if(!result.next()){
+                System.out.println("Invalid Room for Property");
+            }else{
+                int bool = result.getInt("cleanoccupiedbool");
+                if(bool == 10 || bool == 0){
+                    System.out.println("\nRoom " + roomNumber + " is Available\n");
+                }else{
+                    System.out.println("\nRoom " + roomNumber + " is NOT Available\n");
+                }
+            }
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
     }
 
     public static int roomNumber(Scanner scan, int pid){
