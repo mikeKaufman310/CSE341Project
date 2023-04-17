@@ -29,27 +29,30 @@ public class UserInterface{
             System.out.println();
             try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
                 Statement s = con.createStatement();){
-                    String[] cidAndName = customer(scan);//to be parsed
-                    int cid = parseCid(cidAndName[0]);
-                    String customerName = cidAndName[1];
-                    if(cid == -1){//need a new customer id
-                        //get new value for cid
-                        try{
-                            ResultSet maxCid = s.executeQuery("select max(c_id) from customer");
-                            if(maxCid.next())
-                                cid = Integer.parseInt(maxCid.getString("max(c_id)"));
-                        }
-                        catch(SQLException e){
-                            System.out.println();
-                        }
-                        customerName = name(scan);
-                        scan.nextLine();//buffer clear
-                        String customerInsert = newCustomer(scan, cid, customerName);
-                        s.executeUpdate(customerInsert);    
-                    }else if(cid == -23){
-                        System.out.println("\nUI Test Mode Engaged\n");
-                    }//else check if cid matches one in system OR just say in readme that all customers are honest too idk
                     int option = displayUserInterfaceOptions(scan);
+                    int cid = -1;
+                    if(option == 1){
+                        String[] cidAndName = customer(scan);//to be parsed
+                        cid = parseCid(cidAndName[0]);
+                        String customerName = cidAndName[1];
+                        if(cid == -1){//need a new customer id
+                            //get new value for cid
+                            try{
+                                ResultSet maxCid = s.executeQuery("select max(c_id) from customer");
+                                if(maxCid.next())
+                                    cid = Integer.parseInt(maxCid.getString("max(c_id)"));
+                            }
+                            catch(SQLException e){
+                                System.out.println();
+                            }
+                            customerName = name(scan);
+                            scan.nextLine();//buffer clear
+                            String customerInsert = newCustomer(scan, cid, customerName);
+                            s.executeUpdate(customerInsert);    
+                        }else if(cid == -23){
+                            System.out.println("\nUI Test Mode Engaged\n");
+                        }//else check if cid matches one in system OR just say in readme that all customers are honest too idk
+                    }    
                     displayMenu(option);
                     int choice = menuOption(scan, option);
                     if((option == 1 && choice == 7) || (option != 1 && choice == 2)){
