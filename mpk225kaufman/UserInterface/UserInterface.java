@@ -26,7 +26,33 @@ public class UserInterface{
         
         do{
             logIn(scan);
-            System.out.println();
+            System.out.println();/* 
+            //ATTEMPT AT PREPARED STATMENT FOR LOGIN TO PREVENT SQL INJECTION
+            Connection c = null;
+            PreparedStatement ps = null;
+            try{
+                c = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241", "root", "root");
+                ps = c.prepareStatement("select * from tbluser where username=? and password = ?");
+                ps.setString(1, userName);
+                ps.setString(2, password);
+                ResultSet r = ps.executeQuery();
+                if(!(r.next())){
+                    c.close();
+                    throw new Exception("injection");//temp message
+                }
+                r.close();
+            }
+            catch(Exception e){
+                System.exit(1);//temp exception handle
+            }finally{
+                try{
+                    c.close();
+                    ps.close();
+                }
+                catch(Exception e){
+                    System.out.println("poop");//temp message
+                }
+            }*/
             try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
                 Statement s = con.createStatement();){
                     int option = displayUserInterfaceOptions(scan);
@@ -96,7 +122,7 @@ public class UserInterface{
         do{
             System.out.println("1.  Front Desk Clerk");
             System.out.println("2.  Housekeeping");
-            System.out.println("3.  Business Analytics\n");
+            System.out.println("3.  Business Analytics\n");//TBD may change to customer interface cuz I don't wanna change my rates
             try{
                 System.out.print("Enter Interface Option:\t");
                 option = Integer.parseInt(scan.next());
@@ -271,6 +297,28 @@ public class UserInterface{
         System.out.println("Property_ID:\t18\tCity:\tOlney, MD");
         System.out.println("Property_ID:\t19\tCity:\tRoy, UT");
         System.out.println("Property_ID:\t20\tCity:\tTiffin, OH");
+    }
+
+    public static void displayRooms(int pid){
+        ResultSet r = null;
+        try(Connection con=DriverManager.getConnection
+		("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
+         Statement s=con.createStatement();){
+            r = s.executeQuery("select room_number from room where p_id = " + pid);
+            if(r.next()){
+                System.out.println("\nProperty " + pid + " Room Numbers:");
+                System.out.println("--------------------");
+                while(r.next()){
+                    System.out.println(r.getString("room_number"));
+                }
+            }else{
+                throw new Exception();
+            }
+            con.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public static String makeReservation(Scanner scan, int cid){//need arguments
@@ -676,6 +724,7 @@ public class UserInterface{
         do{
             boolean go = false;
             pid = pid(scan);
+            displayRooms(pid);
             roomNumber = roomNumber(scan, pid);//need to do query for this function?
             //IMPLEMENT:    query to see if room is occupied
             System.out.println("\nProperty ID:\t" + pid);
