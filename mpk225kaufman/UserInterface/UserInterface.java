@@ -110,12 +110,21 @@ public class UserInterface{
         scan.close();
     }
 
+    /**
+     * Method to display logo when application is started up
+     */
     public static void displayLogo(){
         System.out.println("\n\nHOTEL CALIFORNIA:");
         System.out.println("Check in anytime you like, but you can never leave!");
         System.out.println("\n---------------------------------------------------------------\n\n");
     }
 
+    /**
+     * Method to display user interface options
+     * OPTIONS: 
+     * @param scan Scanner object for system.in
+     * @return int chosen option for user interface
+     */
     public static int displayUserInterfaceOptions(Scanner scan){
         boolean go = false;
         int option = 0;
@@ -139,6 +148,10 @@ public class UserInterface{
         return option;
     }
 
+    /**
+     * Method to display menu of possible actions based on user interface option
+     * @param option user interface option chosen value
+     */
     //need to update based on interface number
     public static void displayMenu(int option){
         System.out.println("Menu:");
@@ -161,6 +174,13 @@ public class UserInterface{
         
     }
 
+    /**
+     * Method to parse the chose date format for the database system
+     * DATE FORMAT: mm-dd-yy 
+     * NOTE: the dashes in between mm, dd, and yy are not optional
+     * @param date String for date in format
+     * @return size 3 array of strings (months, days, years)
+     */
     public static String[] parseDateStringArr(String date){
         String[] dates = new String[3];//mm-dd-yy => mm is 0 and dd is 1 and y is 2 =. parse on -
         dates = date.split("-");
@@ -170,6 +190,10 @@ public class UserInterface{
         return dates;
     }
 
+    /**
+     * Method to prompt user via system.in for login credentials
+     * @param scan  Scanner object initialized to system.in
+     */
     public static void logIn(Scanner scan){
         System.out.println("Login:");
         System.out.println("--------------------");
@@ -200,12 +224,24 @@ public class UserInterface{
         }
     }
 
+    //NOTE: may go unused
+    /**
+     * Method to check login credentials for sql injection attack
+     * @param userName username to be checked for sql injection
+     * @return boolean => true if possible attack, false otherwise
+     */
     //prepared statment to try to defer sql injection
     //returns true if possible sql injection attack, false otherwise
     public static boolean sqlInjection(String userName){
         return false;//set false for testing before implementation
     }
 
+    /**
+     * Method to get user input of a menu option
+     * @param scan Scanner object initialized to system.in
+     * @param option int option chose for user interface
+     * @return int menu option chosen by user
+     */
     public static int menuOption(Scanner scan, int option){
         int choice = -1;//-1 if no choice made
         boolean go = false;//loop control boolean
@@ -241,6 +277,13 @@ public class UserInterface{
         return choice;
     }
 
+    /**
+     * Method to run specific option chosen by user (call associated function)
+     * @param choice int menu option chosen by user
+     * @param cid int customer id of the user, inputted after previous customer prompt
+     * @param option int option of user interface chosen by user
+     * @return String of query or update to be run in main method
+     */
     public static String runOption(int choice, int cid, int option){
         if(option == 1 && choice == 1){
             return makeReservation(scan, cid);
@@ -262,6 +305,11 @@ public class UserInterface{
         return null;//FOR TEST
     }
 
+    /**
+     * Method to set a room to be clean in database by hoousekeeping personnel
+     * @param scan Scanner object initialized to system.in
+     * @return String of update to be run in main method
+     */
     public static String cleanRoom(Scanner scan){
         int pid = pid(scan);
         int roomNum = roomNumber(scan, pid);
@@ -270,10 +318,18 @@ public class UserInterface{
         return q;
     }
 
+    //NOTE: may go unused
+    /**
+     * Method to display desired business analytics by business/upper management
+     */
     public static void businessAnalytics(){
 
     }
 
+    /**
+     * Method to display all the Hotel california properties
+     * Used in seeAvailability method so user does not have to commit properties to memory
+     */
     public static void displayProperties(){
         System.out.println("Properties:");
         System.out.println("--------------------");
@@ -299,6 +355,10 @@ public class UserInterface{
         System.out.println("Property_ID:\t20\tCity:\tTiffin, OH");
     }
 
+    /**
+     * Method to display the rooms in a property
+     * @param pid int property to see rooms housed
+     */
     public static void displayRooms(int pid){
         ResultSet r = null;
         try(Connection con=DriverManager.getConnection
@@ -321,6 +381,12 @@ public class UserInterface{
         }
     }
 
+    /**
+     * Method to make a reservation 
+     * @param scan Scanner object initialized to System.in
+     * @param cid int customer id used for reservation
+     * @return String of update to be run in main method
+     */
     public static String makeReservation(Scanner scan, int cid){//need arguments
         boolean bigGo = false;
         int pid;
@@ -371,6 +437,13 @@ public class UserInterface{
         return q;
     }
 
+    /**
+     * Method to calculate the dollar cost of a reservation
+     * @param startDate String starting date of the reservation in date format
+     * @param endDate String ending date of the reservation in date format
+     * @param rtid int room type id, describes features of a reservation's room
+     * @return int of dollar cost of reservation stay
+     */
     public static Integer dollarCostRes(String startDate, String endDate, int rtid){
         //parse dates and find difference, multiply times current dollar rate, return
         int[] startArr = parseDate(startDate);
@@ -400,6 +473,13 @@ public class UserInterface{
         return (days * dol);
     }
 
+    /**
+     * Method to calculate the point cost of a reservation
+     * @param startDate String starting date of the reservation in date format
+     * @param endDate String ending date of the reservation in date format
+     * @param rtid int room type id, describes features of a reservation's room
+     * @return int of point cost of reservation stay
+     */
     public static Integer pointCostRes(String startDate, String endDate, int rtid){
         //parse dates and find difference, multiply times current point rate, and return
         int[] startArr = parseDate(startDate);
@@ -429,6 +509,12 @@ public class UserInterface{
         return (days * dol);
     }
 
+    /**
+     * Method to determinee number of people described by user
+     * @param scan Scanner object initalized to System.in
+     * @param rtid int room type id
+     * @return int number of pople staying for reservation
+     */
     public static int numPeople(Scanner scan, int rtid){
         boolean go = false;
         int numPeople; 
@@ -458,6 +544,12 @@ public class UserInterface{
         return numPeople;
     }
 
+    /**
+     * Method to take in a date and verify its format
+     * @param scan Scanner object initialized to System.in
+     * @param dateType String description of date being prompted for
+     * @return String valid date (in described date format)
+     */
     public static String date(Scanner scan, String dateType){
         boolean go = false;
         String date = "";
@@ -481,6 +573,11 @@ public class UserInterface{
         return date;
     }
 
+    /**
+     * Method to parse a string date in the described date format
+     * @param date String date in valid date format
+     * @return integer array of size 3 holding int representations of mm, dd and yy
+     */
     public static int[] parseDate(String date){
         int[] mmddyy = new int[3];
         try{
@@ -495,6 +592,11 @@ public class UserInterface{
         return mmddyy;
     }
 
+    /**
+     * method to get the room type id number from user
+     * @param scan Scanner object initialized to System.in
+     * @return int room type id
+     */
     public static int rtid(Scanner scan){
         boolean go = false;//loop control var
         int rtid;
@@ -518,7 +620,11 @@ public class UserInterface{
         return rtid;
     }
 
-
+    /**
+     * method to get the property id number from user
+     * @param scan Scanner object initialized to System.in
+     * @return int property id
+     */
     public static int pid(Scanner scan){
         displayProperties();
         boolean go = false;//loop contorl var
@@ -543,6 +649,11 @@ public class UserInterface{
         return pid;
     }
 
+    /**
+     * Method to check in a customer to hotel
+     * @param scan Scanner object initialized to system.in
+     * @return String update to be run in main method
+     */
     public static String checkIn(Scanner scan){//need argument
         boolean bigGo = false;
         int resid;
@@ -580,6 +691,11 @@ public class UserInterface{
         return q;
     }
 
+    /**
+     * method to get the reservation id number from user
+     * @param scan Scanner object initialized to System.in
+     * @return int reservation id
+     */
     public static int resid(Scanner scan){
         boolean go = false;
         int resid = 0;
@@ -600,6 +716,11 @@ public class UserInterface{
         return resid;
     }
 
+    /**
+     * Method to check out a customer to hotel
+     * @param scan Scanner object initialized to system.in
+     * @return String update to be run in main method
+     */
     public static String checkOut(Scanner scan){//need arguments
         boolean bigGo = false;
         int resid;
@@ -639,6 +760,11 @@ public class UserInterface{
         return q;
     }
 
+    /**
+     * Method to cancel a customer to hotel
+     * @param scan Scanner object initialized to system.in
+     * @return String update to be run in main method
+     */
     public static String cancellation(Scanner scan){//need argument
         boolean bigGo = false;
         int resid;
@@ -678,6 +804,12 @@ public class UserInterface{
         return q;
     }
 
+    /**
+     * Method to have customer pay for their stay at hotel
+     * @param scan Scanner object initialized to System.in
+     * @param cid int customer id number
+     * @return String update to be run in main method
+     */
     public static String payment(Scanner scan, int cid){//need arguments
         boolean bigGo = false;
         int pid;
@@ -716,7 +848,10 @@ public class UserInterface{
     }
 
     
-
+    /**
+     * Method to see availability of a room at a specific property
+     * @param scan Scanner object initialized to System.in
+     */
     public static void seeAvailablity(Scanner scan){
         boolean bigGo = false;
         int pid;
@@ -769,6 +904,12 @@ public class UserInterface{
         }
     }
 
+    /**
+     * Method to get a room number from user
+     * @param scan Scanner object initalized to System.in
+     * @param pid int property id number
+     * @return int room number inputted
+     */
     public static int roomNumber(Scanner scan, int pid){
         boolean go = false;
         int num = 0;
@@ -792,6 +933,11 @@ public class UserInterface{
         return num;
     }
 
+    /**
+     * Method to prompt user if thee current customer being interacted with is a past customer
+     * @param scan Scanner object initialized to system.in
+     * @return Array of string obejcts containing codes to be parsed in other methods (main method right now)
+     */
     //function to see if someone is a previous customer returns cid NOTE: maybe run this before run option and put cid as arguments in subsequent functions
     //if returned cid is -1 need new cid
     public static String[] customer(Scanner scan){
@@ -831,11 +977,23 @@ public class UserInterface{
         return retArr;
     }
 
+    /**
+     * Method to parse a string customer id number
+     * @param cid String customer id number
+     * @return int customer id number
+     */
     public static int parseCid(String cid){
         int retCid = Integer.parseInt(cid);
         return retCid;
     }
 
+    /**
+     * Method to construct string update to add a new customer
+     * @param scan Scanner object initialized to system.in
+     * @param cid int customer id number
+     * @param name String name of customer
+     * @return String update to be run in main method
+     */
     public static String newCustomer(Scanner scan, int cid, String name){
         String date = date(scan, "Today's Date");
         String addy = address(scan);
@@ -843,6 +1001,11 @@ public class UserInterface{
         return q;
     }
 
+    /**
+     * Method to get a valid address from a user
+     * @param scan Scanner object initalized to System.in
+     * @return string address inputted by user
+     */
     public static String address(Scanner scan){
         boolean go = false;
         String addy = "";
@@ -859,6 +1022,11 @@ public class UserInterface{
         return addy;
     }
 
+    /**
+     * Method to get valid name input by user
+     * @param scan Sccanner initilialized to System.in
+     * @return String name input by user
+     */
     public static String name(Scanner scan){
         String name = "";
         boolean go = false;
@@ -866,6 +1034,9 @@ public class UserInterface{
             try{
                 System.out.print("Enter Customer Name:\t");
                 name = scan.next();
+                if(name.length() > 30){
+                    throw new Exception("Name too long");
+                }
                 go = true;
             }
             catch(Exception e){
