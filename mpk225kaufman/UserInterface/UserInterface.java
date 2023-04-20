@@ -345,12 +345,12 @@ public class UserInterface{
         try(Connection con=DriverManager.getConnection
 		("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
          Statement s=con.createStatement();){
-            r = s.executeQuery("select room_number from room where p_id = " + pid);
+            r = s.executeQuery("select room_number, rt_id from room where p_id = " + pid);
             if(r.next()){
-                System.out.println("\nProperty " + pid + " Room Numbers:");
+                System.out.println("\nProperty " + pid + " Room Numbers and Room Types:");
                 System.out.println("--------------------");
                 while(r.next()){
-                    System.out.println(r.getString("room_number"));
+                    System.out.println(r.getString("room_number") + " - " + r.getString("rt_id"));
                 }
             }else{
                 throw new Exception();
@@ -375,7 +375,8 @@ public class UserInterface{
             if(r.next()){
                 System.out.println("\nProperty " + pid + " Room Types Available:");
                 System.out.println("--------------------");
-                while(r.next()){
+                if(!r.next()){}else{
+                do{
                     if(r.getString("rt_id").equals("1")){
                         System.out.println("1 - Queen Bed");
                     }else if(r.getString("rt_id").equals("2")){
@@ -385,7 +386,17 @@ public class UserInterface{
                     }else{
                         System.out.println("4 - Life In The Fast Lane Suite (Comes With Additional Closet Bed and Pull Out Couch)");
                     }
-                }
+                }while(r.next());}
+                /*String num = r.getString("rt_id");
+                if(num.equals("1")){
+                    System.out.println("1 - Queen Bed");
+                }else if(num.equals("2")){
+                    System.out.println("2 - King Bed (Comes With Pull Out Couch)");
+                }else if(num.equals("3")){
+                    System.out.println("3 - Luxury Suit (Comes With Pull Out Couch)");
+                }else{
+                    System.out.println("4 - Life In The Fast Lane Suite (Comes With Additional Closet Bed and Pull Out Couch)");
+                }*/
             }else{
                 throw new Exception();
             }
@@ -875,6 +886,9 @@ public class UserInterface{
         do{
             boolean go = false;
             pid = pid(scan);
+            System.out.println();
+            displayRoomTypesAvailable(pid);
+            System.out.println();
             displayRooms(pid);
             roomNumber = roomNumber(scan, pid);//need to do query for this function?
             //IMPLEMENT:    query to see if room is occupied
