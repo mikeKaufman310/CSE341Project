@@ -375,7 +375,7 @@ public class UserInterface{
             if(r.next()){
                 System.out.println("\nProperty " + pid + " Room Types Available:");
                 System.out.println("--------------------");
-                if(!r.next()){}else{
+                
                 do{
                     if(r.getString("rt_id").equals("1")){
                         System.out.println("1 - Queen Bed");
@@ -386,7 +386,7 @@ public class UserInterface{
                     }else{
                         System.out.println("4 - Life In The Fast Lane Suite (Comes With Additional Closet Bed and Pull Out Couch)");
                     }
-                }while(r.next());}
+                }while(r.next());
                 /*String num = r.getString("rt_id");
                 if(num.equals("1")){
                     System.out.println("1 - Queen Bed");
