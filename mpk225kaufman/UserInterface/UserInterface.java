@@ -11,7 +11,7 @@ public class UserInterface{
     static String userName = "";
     static Scanner scan = new Scanner(System.in);
     static final int[] userInterfaces = {1, 2, 3};//array to determine which interface (front desk clerk, housekeeping, etc.)
-    //1 is front desk clerk, 2 is house keeping, 3 is business analytics
+    //1 is front desk clerk, 2 is house keeping, 3 is customer
     static int userInterface = 0;
 
 
@@ -32,7 +32,7 @@ public class UserInterface{
                     int option = displayUserInterfaceOptions(scan);
                     int cid = -1;
                     if(option == 1 || option == 3){
-                        String[] cidAndName = customer(scan);//to be parsed
+                        String[] cidAndName = customer(scan, option);//to be parsed
                         cid = parseCid(cidAndName[0]);
                         String customerName = cidAndName[1];
                         if(cid == -1){//need a new customer id
@@ -55,7 +55,7 @@ public class UserInterface{
                     }    
                     displayMenu(option);
                     int choice = menuOption(scan, option);
-                    if((option == 1 && choice == 7) || (option ==2 && choice == 2) || (option == 3 && choice == 4)){
+                    if((option == 1 && choice == 6) || (option ==2 && choice == 2) || (option == 3 && choice == 4)){
                         con.close();
                         System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
                         System.exit(0);
@@ -226,7 +226,7 @@ public class UserInterface{
         do{
             try{
                 if(option == 1){
-                    System.out.print("Enter a Choice (1-7):\t");
+                    System.out.print("Enter a Choice (1-6):\t");
                 }else if(option == 2){
                     System.out.print("Enter a Choice (1-2):\t");
                 }else{
@@ -956,13 +956,17 @@ public class UserInterface{
      */
     //function to see if someone is a previous customer returns cid NOTE: maybe run this before run option and put cid as arguments in subsequent functions
     //if returned cid is -1 need new cid
-    public static String[] customer(Scanner scan){
+    public static String[] customer(Scanner scan, int option){
         boolean go = false;
         int cid = -1;
         String[] retArr = {" ", " "};
         do{
             try{
-                System.out.print("Past Customer? (y/n)\t");
+                if(option == 3){
+                    System.out.print("Past Customer? (y/n):\t");
+                }else{
+                    System.out.print("Is Client a Past Customer? (y/n):\t");
+                }
                 String response1 = scan.next();
                 String response2;
                 String response3;
