@@ -26,38 +26,12 @@ public class UserInterface{
         
         do{
             logIn(scan);
-            System.out.println();/* 
-            //ATTEMPT AT PREPARED STATMENT FOR LOGIN TO PREVENT SQL INJECTION
-            Connection c = null;
-            PreparedStatement ps = null;
-            try{
-                c = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241", "root", "root");
-                ps = c.prepareStatement("select * from tbluser where username=? and password = ?");
-                ps.setString(1, userName);
-                ps.setString(2, password);
-                ResultSet r = ps.executeQuery();
-                if(!(r.next())){
-                    c.close();
-                    throw new Exception("injection");//temp message
-                }
-                r.close();
-            }
-            catch(Exception e){
-                System.exit(1);//temp exception handle
-            }finally{
-                try{
-                    c.close();
-                    ps.close();
-                }
-                catch(Exception e){
-                    System.out.println("poop");//temp message
-                }
-            }*/
+            System.out.println();
             try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
                 Statement s = con.createStatement();){
                     int option = displayUserInterfaceOptions(scan);
                     int cid = -1;
-                    if(option == 1){
+                    if(option == 1 || option == 3){
                         String[] cidAndName = customer(scan);//to be parsed
                         cid = parseCid(cidAndName[0]);
                         String customerName = cidAndName[1];
@@ -81,13 +55,15 @@ public class UserInterface{
                     }    
                     displayMenu(option);
                     int choice = menuOption(scan, option);
-                    if((option == 1 && choice == 7) || (option != 1 && choice == 2)){
+                    if((option == 1 && choice == 7) || (option ==2 && choice == 2) || (option == 3 && choice == 4)){
                         con.close();
                         System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
                         System.exit(0);
                     }
                     String q = runOption(choice, cid, option);
-                    s.executeUpdate(q);
+                    if(q != null){
+                        s.executeUpdate(q);
+                    }
                     con.close();
                     System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
                     go = true;
@@ -131,7 +107,7 @@ public class UserInterface{
         do{
             System.out.println("1.  Front Desk Clerk");
             System.out.println("2.  Housekeeping");
-            System.out.println("3.  Business Analytics\n");//TBD may change to customer interface cuz I don't wanna change my rates
+            System.out.println("3.  Customer\n");//TBD may change to customer interface cuz I don't wanna change my rates
             try{
                 System.out.print("Enter Interface Option:\t");
                 option = Integer.parseInt(scan.next());
@@ -157,19 +133,20 @@ public class UserInterface{
         System.out.println("Menu:");
         System.out.println("--------------------");
         if(option == 1){
-            System.out.println("1.  Make Reservation");
-            System.out.println("2.  Check In");
-            System.out.println("3.  Check Out");
-            System.out.println("4.  Cancellation");
-            System.out.println("5.  Pay");
-            System.out.println("6.  See Availability");
-            System.out.println("7.  Exit");
+            System.out.println("1.  Check In");
+            System.out.println("2.  Check Out");
+            System.out.println("3.  Cancellation");
+            System.out.println("4.  Pay");
+            System.out.println("5.  See Availability");
+            System.out.println("6.  Exit");
         }else if(option == 2){
             System.out.println("1.  Mark Room As Clean");
             System.out.println("2.  Exit");
         }else if(option == 3){
-            System.out.println("1.  See Statistics");
-            System.out.println("2.  Exit");
+            System.out.println("1.  Make Reservation");
+            System.out.println("2.  Pay");
+            System.out.println("3.  See Availability");
+            System.out.println("4.  Exit");
         }
         
     }
@@ -250,8 +227,10 @@ public class UserInterface{
             try{
                 if(option == 1){
                     System.out.print("Enter a Choice (1-7):\t");
-                }else{
+                }else if(option == 2){
                     System.out.print("Enter a Choice (1-2):\t");
+                }else{
+                    System.out.print("Enter a Choice (1-4):\t");
                 }
                 //scan.next();
                 String tempChoiceString = scan.next();
@@ -262,7 +241,7 @@ public class UserInterface{
                 }else if(option == 2 && tempChoice >= 1 && tempChoice <= 2){
                     choice = tempChoice;
                     go = true;
-                }else if(option == 3 && tempChoice >= 1 && tempChoice <= 2){
+                }else if(option == 3 && tempChoice >= 1 && tempChoice <= 4){
                     choice = tempChoice;
                     go = true;
                 }else{
@@ -286,21 +265,23 @@ public class UserInterface{
      */
     public static String runOption(int choice, int cid, int option){
         if(option == 1 && choice == 1){
-            return makeReservation(scan, cid);
-        }else if(option == 1 && choice == 2){
             return checkIn(scan);
-        }else if(option == 1 && choice == 3){
+        }else if(option == 1 && choice == 2){
             return checkOut(scan);
-        }else if(option == 1 && choice == 4){
+        }else if(option == 1 && choice == 3){
             return cancellation(scan);
-        }else if(option == 1 && choice == 5){
+        }else if(option == 1 && choice == 4){
             return payment(scan, cid);
-        }else if(option == 1 &&  choice == 6){
+        }else if(option == 1 && choice == 5){
             seeAvailablity(scan);
+        }else if(option == 3 &&  choice == 1){
+            return makeReservation(scan, cid);
         }else if(option == 2 && choice == 1){
             return cleanRoom(scan);
+        }else if(option == 3 && choice == 2){
+            return payment(scan, cid);
         }else{
-            businessAnalytics();
+            seeAvailablity(scan);
         }
         return null;//FOR TEST
     }
@@ -382,6 +363,40 @@ public class UserInterface{
     }
 
     /**
+     * Method to display the available room types for a property input by user 
+     * @param pid int property id
+     */
+    public static void displayRoomTypesAvailable(int pid){
+        ResultSet r = null;
+        try(Connection con=DriverManager.getConnection
+		("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
+         Statement s=con.createStatement();){
+            r = s.executeQuery("select distinct rt_id from room where (cleanoccupiedbool = 10 or cleanoccupiedbool = 0) and p_id = " + pid);
+            if(r.next()){
+                System.out.println("\nProperty " + pid + " Room Types Available:");
+                System.out.println("--------------------");
+                while(r.next()){
+                    if(r.getString("rt_id").equals("1")){
+                        System.out.println("1 - Queen Bed");
+                    }else if(r.getString("rt_id").equals("2")){
+                        System.out.println("2 - King Bed (Comes With Pull Out Couch)");
+                    }else if(r.getString("rt_id").equals("3")){
+                        System.out.println("3 - Luxury Suit (Comes With Pull Out Couch)");
+                    }else{
+                        System.out.println("4 - Life In The Fast Lane Suite (Comes With Additional Closet Bed and Pull Out Couch)");
+                    }
+                }
+            }else{
+                throw new Exception();
+            }
+            con.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Method to make a reservation 
      * @param scan Scanner object initialized to System.in
      * @param cid int customer id used for reservation
@@ -399,7 +414,8 @@ public class UserInterface{
         do{
         //function to display properties and their ids for the clerks use
             pid = pid(scan);
-            //function to display room types for the clerks use
+            displayRoomTypesAvailable(pid);
+            System.out.println();
             rtid = rtid(scan);
             startDate = date(scan, "Start Date");
             endDate = date(scan, "End Date");
