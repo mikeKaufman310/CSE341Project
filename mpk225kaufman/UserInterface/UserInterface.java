@@ -2,14 +2,14 @@
 
 
 import java.util.*;
-import java.lang.*;
 import java.sql.*;
+
 public class UserInterface{
     
     //Fields
     static String password = "";
     static String userName = "";
-    static Scanner scan = new Scanner(System.in);
+    //static Scanner scan = new Scanner(System.in);
     static final int[] userInterfaces = {1, 2, 3};//array to determine which interface (front desk clerk, housekeeping, etc.)
     //1 is front desk clerk, 2 is house keeping, 3 is customer
     static int userInterface = 0;
@@ -20,6 +20,7 @@ public class UserInterface{
      * @param args instructions
      */
     public static void main(String[] args){
+        Scanner scan = new Scanner(System.in);
         //display logo
         displayLogo();
         boolean go = true;;// var for failed password //NOTE: maybe loop  login attempts and handle wrong password
@@ -43,10 +44,11 @@ public class UserInterface{
                                     cid = Integer.parseInt(maxCid.getString("max(c_id)"));
                             }
                             catch(SQLException e){
-                                System.out.println();
+                                System.out.println("flag");//for test
                             }
                             customerName = name(scan);
-                            scan.nextLine();//buffer clear
+                            System.out.println(customerName);//for test
+                            //scan.nextLine();//buffer clear
                             String customerInsert = newCustomer(scan, cid, customerName);
                             s.executeUpdate(customerInsert);    
                         }else if(cid == -23){
@@ -60,7 +62,7 @@ public class UserInterface{
                         System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
                         System.exit(0);
                     }
-                    String q = runOption(choice, cid, option);
+                    String q = runOption(scan, choice, cid, option);
                     if(q != null){
                         s.executeUpdate(q);
                     }
@@ -73,6 +75,7 @@ public class UserInterface{
                     System.out.println("\nInvalid Login Attempt, Try Again\n");
                     go = false;
                 }else{
+                    e.printStackTrace();
                     System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
                     go = true;
                 }
@@ -263,7 +266,7 @@ public class UserInterface{
      * @param option int option of user interface chosen by user
      * @return String of query or update to be run in main method
      */
-    public static String runOption(int choice, int cid, int option){
+    public static String runOption(Scanner scan, int choice, int cid, int option){
         if(option == 1 && choice == 1){
             return checkIn(scan);
         }else if(option == 1 && choice == 2){
@@ -586,7 +589,7 @@ public class UserInterface{
             if(date.matches("(\\d{2}-\\d{2}-\\d{2})|(\\d{1}-\\d{2}-\\d{2})|(\\d{1}-\\d{1}-\\d{2})|(\\d{2}-\\d{1}-\\d{2})")){
                 //check if valid date using parseDate function
                 int[] checkDateArr = parseDate(date);
-                if((checkDateArr[0]>=1 && checkDateArr[0]<= 12)&&(checkDateArr[1]>=1 && checkDateArr[1]<=31)&&(checkDateArr[2]>=24 && checkDateArr[2]<=99)){//note only taking reservations after 2024
+                if((checkDateArr[0]>=1 && checkDateArr[0]<= 12)&&(checkDateArr[1]>=1 && checkDateArr[1]<=31)&&(checkDateArr[2]>=23 && checkDateArr[2]<=99)){//note only taking reservations after 2024
                     go = true;
                 }else{
                     System.out.println("\nInvalid Date, Try Again\n");
@@ -972,7 +975,7 @@ public class UserInterface{
     //if returned cid is -1 need new cid
     public static String[] customer(Scanner scan, int option){
         boolean go = false;
-        int cid = -1;
+        //int cid = -1;
         String[] retArr = {" ", " "};
         do{
             try{
@@ -1031,6 +1034,7 @@ public class UserInterface{
     public static String newCustomer(Scanner scan, int cid, String name){
         String date = date(scan, "Today's Date");
         String addy = address(scan);
+        //String q = null;//POOP
         String q = "insert into customer values (" + cid + ", '" + date + "', '" + addy + "', '" + name + "')";
         return q;
     }
@@ -1045,8 +1049,9 @@ public class UserInterface{
         String addy = "";
         do{
             try{
+                scan.nextLine();//buffer clear
                 System.out.print("Enter Customer Address:\t");
-                addy = scan.next();
+                addy = scan.nextLine();
                 go = true;
             }
             catch(Exception e){
@@ -1066,8 +1071,9 @@ public class UserInterface{
         boolean go = false;
         do{
             try{
+                scan.nextLine();
                 System.out.print("Enter Customer Name:\t");
-                name = scan.next();
+                name = scan.nextLine();
                 if(name.length() > 30){
                     throw new Exception("Name too long");
                 }

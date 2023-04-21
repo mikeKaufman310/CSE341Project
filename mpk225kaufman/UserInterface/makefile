@@ -15,3 +15,9 @@ test:
 clean:
 	rm UserInterface.class
 	rm UserInterface.jar
+
+tester:
+	javac Tester.java UserInterface.java
+	java Tester
+	rm Tester.class
+	rm UserInterface.class
