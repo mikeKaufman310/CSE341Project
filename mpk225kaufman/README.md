@@ -3,9 +3,28 @@ Michael Kaufman
 
 ------------------------------------
 
+Build Instructions:
+
+
 Directory Structure:
 
-Makefile Instructions:
 
-Notes to Grader/Oddities:
+Application Description:
+	Front Desk Clerk Interface:
+
+	Housekeeping Interface:
+
+	Customer Interface:
+
+
+Code Description:
+
+
+Database Design:
+
+
+Assumptions:
+
+
+Notes to Grader/Limitations/Oddities:
 
