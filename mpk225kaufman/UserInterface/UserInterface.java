@@ -28,7 +28,6 @@ public class UserInterface{
         displayLogo();
         boolean go = true;;// var for failed password //NOTE: maybe loop  login attempts and handle wrong password
         currentDate = currentDate();
-        System.out.println(currentDate);//for test
         do{
             logIn(scan);
             System.out.println();
@@ -51,8 +50,9 @@ public class UserInterface{
                                 System.out.println("flag");//for test
                             }
                             customerName = name(scan);
-                            System.out.println(customerName);//for test
+                            //System.out.println(customerName);//for test
                             //scan.nextLine();//buffer clear
+                            cid++;
                             String customerInsert = newCustomer(scan, cid, customerName);
                             s.executeUpdate(customerInsert);    
                         }else if(cid == -23){
@@ -781,13 +781,16 @@ public class UserInterface{
             resid = resid(scan);
             pid = pid(scan);
             date = date(scan, "Today's Date");
+            if(!date.equals(currentDate)){
+                return null;
+            }
             roomNum = roomNumber(scan, pid);
             boolean go = false;
             do{
                 try{
                     System.out.println("\nReservation ID:\t" + resid);
                     System.out.println("Property ID:\t" + pid);
-                    System.out.println("Date of Reservation:\t" + date);
+                    System.out.println("Date of Check Out:\t" + date);
                     System.out.println("Room Number:\t" + roomNum);
                     System.out.print("\nIs this correct? (y/n):\t");
                     String response = scan.next();
@@ -869,6 +872,9 @@ public class UserInterface{
             boolean go = false;
             pid = pid(scan);
             date = date(scan, "Today's Date");
+            if(!(date.equals(currentDate))){
+                return null;
+            }
             roomNum = roomNumber(scan, pid);
             do{
                 try{
@@ -1052,7 +1058,7 @@ public class UserInterface{
      * @return String update to be run in main method
      */
     public static String newCustomer(Scanner scan, int cid, String name){
-        String date = date(scan, "Today's Date");
+        String date = currentDate;
         String addy = address(scan);
         //String q = null;//POOP
         String q = "insert into customer values (" + cid + ", '" + date + "', '" + addy + "', '" + name + "')";
@@ -1069,7 +1075,7 @@ public class UserInterface{
         String addy = "";
         do{
             try{
-                scan.nextLine();//buffer clear
+                //scan.nextLine();//buffer clear
                 System.out.print("Enter Customer Address:\t");
                 addy = scan.nextLine();
                 go = true;
@@ -1094,6 +1100,7 @@ public class UserInterface{
                 scan.nextLine();
                 System.out.print("Enter Customer Name:\t");
                 name = scan.nextLine();
+                //System.out.println(name);
                 if(name.length() > 30){
                     throw new Exception("Name too long");
                 }
