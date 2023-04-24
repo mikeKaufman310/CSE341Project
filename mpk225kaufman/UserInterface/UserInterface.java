@@ -709,7 +709,10 @@ public class UserInterface{
         do{
             resid = resid(scan);
             pid = pid(scan);
-            date = date(scan, "Today's Date");
+            date = date(scan, "the Date of Reservation");
+            if(!(date.equals(currentDate))){//invalid checkin date
+                return null;
+            }
             boolean go = false;
             do{
                 try{
