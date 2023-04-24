@@ -3,6 +3,7 @@
 
 import java.util.*;
 import java.sql.*;
+import java.time.*;
 
 public class UserInterface{
     
@@ -13,6 +14,8 @@ public class UserInterface{
     static final int[] userInterfaces = {1, 2, 3};//array to determine which interface (front desk clerk, housekeeping, etc.)
     //1 is front desk clerk, 2 is house keeping, 3 is customer
     static int userInterface = 0;
+    //current date
+    static String currentDate;
 
 
     /**
@@ -24,7 +27,8 @@ public class UserInterface{
         //display logo
         displayLogo();
         boolean go = true;;// var for failed password //NOTE: maybe loop  login attempts and handle wrong password
-        
+        currentDate = currentDate();
+        System.out.println(currentDate);//for test
         do{
             logIn(scan);
             System.out.println();
@@ -87,6 +91,19 @@ public class UserInterface{
             }
         }while(!go);
         scan.close();
+    }
+
+
+    /**
+     * Method to make a global current date for program and checking
+     * @return String of currentDate
+     */
+    public static String currentDate(){
+        LocalDate date = LocalDate.now();
+        String day = Integer.toString((date.getDayOfMonth()));
+        String month = Integer.toString((date.getMonthValue()));
+        String year = Integer.toString((date.getYear()));
+        return (month + "-" + day + "-" + year);
     }
 
     /**
