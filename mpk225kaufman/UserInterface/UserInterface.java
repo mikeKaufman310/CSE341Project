@@ -312,9 +312,14 @@ public class UserInterface{
         return null;//FOR TEST
     }
 
+    /**
+     * Method to construct an update for member table
+     * @param scan Scanner object initialized to System.in
+     * @param cid int customer id
+     * @return String for update
+     */
     public static String newFreqGuest(Scanner scan, int cid){
-        String q = "";
-
+        String q = "insert into member values (" + cid + ", " + currentDate + ", " + 0 + ")";
         return q;
     }
 
