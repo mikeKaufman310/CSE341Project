@@ -161,12 +161,14 @@ public class UserInterface{
             System.out.println("6.  Exit");
         }else if(option == 2){
             System.out.println("1.  Mark Room As Clean");
-            System.out.println("2.  Exit");
+            System.out.println("2.  View Unclean Rooms");
+            System.out.println("3.  Exit");
         }else if(option == 3){
             System.out.println("1.  Make Reservation");
             System.out.println("2.  Pay");
             System.out.println("3.  See Availability");
-            System.out.println("4.  Exit");
+            System.out.println("4.  Join Frequent Guest Program");
+            System.out.println("5.  Exit");
         }
         
     }
@@ -248,20 +250,20 @@ public class UserInterface{
                 if(option == 1){
                     System.out.print("Enter a Choice (1-6):\t");
                 }else if(option == 2){
-                    System.out.print("Enter a Choice (1-2):\t");
+                    System.out.print("Enter a Choice (1-3):\t");
                 }else{
-                    System.out.print("Enter a Choice (1-4):\t");
+                    System.out.print("Enter a Choice (1-5):\t");
                 }
                 //scan.next();
                 String tempChoiceString = scan.next();
                 int tempChoice = Integer.parseInt(tempChoiceString);
-                if(option == 1 && tempChoice >= 1 && tempChoice <= 7){
+                if(option == 1 && tempChoice >= 1 && tempChoice <= 6){
                     choice = tempChoice;
                     go = true;
-                }else if(option == 2 && tempChoice >= 1 && tempChoice <= 2){
+                }else if(option == 2 && tempChoice >= 1 && tempChoice <= 3){
                     choice = tempChoice;
                     go = true;
-                }else if(option == 3 && tempChoice >= 1 && tempChoice <= 4){
+                }else if(option == 3 && tempChoice >= 1 && tempChoice <= 5){
                     choice = tempChoice;
                     go = true;
                 }else{
@@ -300,10 +302,43 @@ public class UserInterface{
             return cleanRoom(scan);
         }else if(option == 3 && choice == 2){
             return payment(scan, cid);
-        }else{
+        }else if(option == 2 && choice == 3){
+            dirtyRooms(scan);
+        }else if(option == 3 && choice == 3){
             seeAvailablity(scan);
+        }else if(option == 3 && choice == 4){
+            //join frequent guest
         }
         return null;//FOR TEST
+    }
+
+    public static String newFreqGuest(Scanner scan, int cid){
+        String q = "";
+
+        return q;
+    }
+
+    /**
+     * Method to see rooms that need to be cleaned
+     * @param scan Scanner object initialized to System.in
+     */
+    public static void dirtyRooms(Scanner scan){
+        int pid = pid(scan);
+        try (
+         Connection con=DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
+         Statement s=con.createStatement();
+        ){
+            ResultSet result;
+            String q = "select distinct room_number from room where (cleanoccupiedbool = 0 or cleanoccupiedbool = 1) and p_id = " + pid;
+            result = s.executeQuery(q);
+            while(result.next()){
+                System.out.println(result.getString("room_number"));
+            } 
+            con.close();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
     }
 
     /**
