@@ -337,7 +337,7 @@ public class UserInterface{
             ResultSet result;
             String q = "select distinct room_number from room where (cleanoccupiedbool = 0 or cleanoccupiedbool = 1) and p_id = " + pid;
             result = s.executeQuery(q);
-            System.out.println("\nRooms To Be Cleaned:\t");
+            System.out.println("\nRooms To Be Cleaned:\t");//added in commit after exit bug
             while(result.next()){
                 System.out.println(result.getString("room_number"));
             } 
