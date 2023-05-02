@@ -61,7 +61,7 @@ public class UserInterface{
                     }    
                     displayMenu(option);
                     int choice = menuOption(scan, option);
-                    if((option == 1 && choice == 6) || (option ==2 && choice == 2) || (option == 3 && choice == 4)){
+                    if((option == 1 && choice == 6) || (option ==2 && choice == 3) || (option == 3 && choice == 5)){
                         con.close();
                         System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
                         System.exit(0);
@@ -286,6 +286,7 @@ public class UserInterface{
      * @return String of query or update to be run in main method
      */
     public static String runOption(Scanner scan, int choice, int cid, int option){
+        //System.out.println("Option: " + option + ", Choice: " + choice);//for test
         if(option == 1 && choice == 1){
             return checkIn(scan);
         }else if(option == 1 && choice == 2){
@@ -302,12 +303,12 @@ public class UserInterface{
             return cleanRoom(scan);
         }else if(option == 3 && choice == 2){
             return payment(scan, cid);
-        }else if(option == 2 && choice == 3){
+        }else if(option == 2 && choice == 2){
             dirtyRooms(scan);
         }else if(option == 3 && choice == 3){
             seeAvailablity(scan);
         }else if(option == 3 && choice == 4){
-            //join frequent guest
+            return newFreqGuest(scan, cid);
         }
         return null;//FOR TEST
     }
@@ -336,6 +337,7 @@ public class UserInterface{
             ResultSet result;
             String q = "select distinct room_number from room where (cleanoccupiedbool = 0 or cleanoccupiedbool = 1) and p_id = " + pid;
             result = s.executeQuery(q);
+            System.out.println("\nRooms To Be Cleaned:\t");
             while(result.next()){
                 System.out.println(result.getString("room_number"));
             } 
