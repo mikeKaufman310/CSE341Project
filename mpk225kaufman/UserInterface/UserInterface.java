@@ -353,7 +353,28 @@ public class UserInterface{
      */
     public static String cleanRoom(Scanner scan){
         int pid = pid(scan);
-        int roomNum = roomNumber(scan, pid);
+        boolean go = false;
+        int roomNum;
+        do{
+            roomNum = roomNumber(scan, pid);
+            try (
+            Connection con=DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
+            Statement s=con.createStatement();
+            ){
+                ResultSet result;
+                String q = "select * from room where room_number = " + roomNum + " and p_id = " + pid;
+                result = s.executeQuery(q);
+                if(!(result.next())){
+                    System.out.println("\nRoom Does Not Exist, Try Again!\n");
+                }else{
+                    go = true;
+                }
+                con.close();
+            }
+            catch(Exception e){
+                System.out.println(e);
+            }
+        }while(!go);
         System.out.println("\nRoom " + roomNum + " Updated as Clean\n");
         String q = "begin cleanRoom (" + pid + ", " + roomNum + "); end;";
         return q;
