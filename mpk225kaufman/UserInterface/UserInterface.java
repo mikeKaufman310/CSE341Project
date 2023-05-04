@@ -33,6 +33,7 @@ public class UserInterface{
             logIn(scan);
             System.out.println();
             do{
+                bigGo = true;
                 try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
                     Statement s = con.createStatement();){
                         int option = displayUserInterfaceOptions(scan);
@@ -81,6 +82,7 @@ public class UserInterface{
                     if(e.getErrorCode() == 1017){
                         System.out.println("\nInvalid Login Attempt, Try Again\n");
                         go = false;
+                        bigGo = false;
                     }else{
                         e.printStackTrace();
                         //System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
