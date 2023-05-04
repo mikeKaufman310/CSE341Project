@@ -56,7 +56,7 @@ public class UserInterface{
                                 //scan.nextLine();//buffer clear
                                 cid++;
                                 String customerInsert = newCustomer(scan, cid, customerName);
-                                s.executeUpdate(customerInsert);    
+                                //s.executeUpdate(customerInsert);    now preparred statement
                             }else if(cid == -23){
                                 System.out.println("\nUI Test Mode Engaged\n");
                             }//else check if cid matches one in system OR just say in readme that all customers are honest too idk
@@ -1085,12 +1085,33 @@ public class UserInterface{
                 String response3;
                 response1 = response1.toLowerCase();
                 if(response1.equals("y")){
-                    System.out.print("\nInput Customer ID:\t");
-                    response2 = ((Integer)(Integer.parseInt(scan.next()))).toString();
+                    System.out.print("\nInput Customer Address:\t");
+                    response2 = scan.next(); 
                     System.out.print("\nInput Customer Name:\t");
                     response3 = scan.next();
-                    retArr[0] = response2;//String version of cid
-                    retArr[1] = response3;
+                    try (
+                    Connection con=DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
+                    Statement s=con.createStatement();
+                    ){
+                        ResultSet result;
+                        String q = "select * from customer where customer_name = " + response3  + " and address = " + response2;
+                        result = s.executeQuery(q);
+                        if(!(result.next())){
+                            retArr[0] = "-1";
+                            retArr[1] = "-1";
+                        }else{
+                            q = "select max(c_id) from customer where customer_name = " + response3  + " and address = " + response2;
+                            result = s.executeQuery(q);
+                            response2 = Integer.toString(result.getInt("max(c_id)"));
+                            retArr[0] = response2;//String version of cid
+                            retArr[1] = response3;
+                        }
+                        
+                        con.close();
+                    }
+                    catch(Exception e){
+                        System.out.println(e);
+                    }
                     go = true;
                 }else if(response1.equals("n")){
                     retArr[0] = "-1";
@@ -1131,7 +1152,26 @@ public class UserInterface{
         String date = currentDate;
         String addy = address(scan);
         //String q = null;//POOP
-        String q = "insert into customer values (" + cid + ", '" + date + "', '" + addy + "', '" + name + "')";
+        //String q = "insert into customer values (" + cid + ", '" + date + "', '" + addy + "', '" + name + "')";
+        String q = "insert into customer values (?, ?, ?, ?)";
+        try (
+         Connection con=DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
+         PreparedStatement s=con.prepareStatement(q);
+        ){
+            con.setAutoCommit(false);
+            s.setInt(1, cid);
+            s.setString(2, date);
+            s.setString(3, addy);
+            s.setString(4, name);
+            s.executeUpdate();
+            con.commit();
+            con.close();
+        }
+        catch(Exception e){
+            System.out.println(e);
+            System.out.println("detected sql injection");
+            System.exit(0);
+        }
         return q;
     }
 
