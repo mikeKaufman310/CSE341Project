@@ -26,71 +26,78 @@ public class UserInterface{
         Scanner scan = new Scanner(System.in);
         //display logo
         displayLogo();
+        boolean bigGo = true;
         boolean go = true;;// var for failed password //NOTE: maybe loop  login attempts and handle wrong password
         currentDate = currentDate();
         do{
             logIn(scan);
             System.out.println();
-            try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
-                Statement s = con.createStatement();){
-                    int option = displayUserInterfaceOptions(scan);
-                    int cid = -1;
-                    if(option == 1 || option == 3){
-                        String[] cidAndName = customer(scan, option);//to be parsed
-                        cid = parseCid(cidAndName[0]);
-                        String customerName = cidAndName[1];
-                        if(cid == -1){//need a new customer id
-                            //get new value for cid
-                            try{
-                                ResultSet maxCid = s.executeQuery("select max(c_id) from customer");
-                                if(maxCid.next())
-                                    cid = Integer.parseInt(maxCid.getString("max(c_id)"));
-                            }
-                            catch(SQLException e){
-                                System.out.println("flag");//for test
-                            }
-                            customerName = name(scan);
-                            //System.out.println(customerName);//for test
-                            //scan.nextLine();//buffer clear
-                            cid++;
-                            String customerInsert = newCustomer(scan, cid, customerName);
-                            s.executeUpdate(customerInsert);    
-                        }else if(cid == -23){
-                            System.out.println("\nUI Test Mode Engaged\n");
-                        }//else check if cid matches one in system OR just say in readme that all customers are honest too idk
-                    }    
-                    displayMenu(option);
-                    int choice = menuOption(scan, option);
-                    if((option == 1 && choice == 6) || (option ==2 && choice == 3) || (option == 3 && choice == 5)){
+            do{
+                try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
+                    Statement s = con.createStatement();){
+                        int option = displayUserInterfaceOptions(scan);
+                        int cid = -1;
+                        if(option == 1 || option == 3){
+                            String[] cidAndName = customer(scan, option);//to be parsed
+                            cid = parseCid(cidAndName[0]);
+                            String customerName = cidAndName[1];
+                            if(cid == -1){//need a new customer id
+                                //get new value for cid
+                                try{
+                                    ResultSet maxCid = s.executeQuery("select max(c_id) from customer");
+                                    if(maxCid.next())
+                                        cid = Integer.parseInt(maxCid.getString("max(c_id)"));
+                                }
+                                catch(SQLException e){
+                                    System.out.println("flag");//for test
+                                }
+                                customerName = name(scan);
+                                //System.out.println(customerName);//for test
+                                //scan.nextLine();//buffer clear
+                                cid++;
+                                String customerInsert = newCustomer(scan, cid, customerName);
+                                s.executeUpdate(customerInsert);    
+                            }else if(cid == -23){
+                                System.out.println("\nUI Test Mode Engaged\n");
+                            }//else check if cid matches one in system OR just say in readme that all customers are honest too idk
+                        }    
+                        displayMenu(option);
+                        int choice = menuOption(scan, option);
+                        if((option == 1 && choice == 6) || (option ==2 && choice == 3) || (option == 3 && choice == 5)){
+                            con.close();
+                            System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
+                            System.exit(0);
+                        }
+                        String q = runOption(scan, choice, cid, option);
+                        if(q != null){
+                            s.executeUpdate(q);
+                        }
                         con.close();
-                        System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
-                        System.exit(0);
-                    }
-                    String q = runOption(scan, choice, cid, option);
-                    if(q != null){
-                        s.executeUpdate(q);
-                    }
-                    con.close();
-                    System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
-                    go = true;
-            }
-            catch(SQLException e){
-                if(e.getErrorCode() == 1017){
-                    System.out.println("\nInvalid Login Attempt, Try Again\n");
-                    go = false;
-                }else{
-                    e.printStackTrace();
-                    System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
-                    go = true;
+                        //System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
+                        //bigGo = false;
+                        go = true;
                 }
-            }
-            catch(Exception e){
-                System.out.println(e);
-                System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
-                go = true;      
-            }
+                catch(SQLException e){
+                    if(e.getErrorCode() == 1017){
+                        System.out.println("\nInvalid Login Attempt, Try Again\n");
+                        go = false;
+                    }else{
+                        e.printStackTrace();
+                        //System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
+                        //bigGo = false;
+                        go = true;
+                    }
+                }
+                catch(Exception e){
+                    System.out.println(e);
+                    //System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
+                    bigGo = true;
+                    go = true;      
+                }
+            }while(bigGo);
         }while(!go);
         scan.close();
+        System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
     }
 
 
