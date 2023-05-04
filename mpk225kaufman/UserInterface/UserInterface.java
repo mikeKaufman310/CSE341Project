@@ -83,6 +83,10 @@ public class UserInterface{
                         System.out.println("\nInvalid Login Attempt, Try Again\n");
                         go = false;
                         bigGo = false;
+                    }else if(e.getErrorCode() == 1403){
+                        System.out.println("\nNo Matching Reservation For Customer, No Balance Due\n");
+                        go = false;
+                        bigGo = true;
                     }else{
                         e.printStackTrace();
                         //System.out.println("\nLogging Out...\n\nGoodbye! Take it Easy!");
@@ -459,8 +463,9 @@ public class UserInterface{
      * Method to display the available room types for a property input by user 
      * @param pid int property id
      */
-    public static void displayRoomTypesAvailable(int pid){
+    public static List<Integer> displayRoomTypesAvailable(int pid){
         ResultSet r = null;
+        ArrayList<Integer> arr = new ArrayList<>();
         try(Connection con=DriverManager.getConnection
 		("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
          Statement s=con.createStatement();){
@@ -472,12 +477,16 @@ public class UserInterface{
                 do{
                     if(r.getString("rt_id").equals("1")){
                         System.out.println("1 - Queen Bed");
+                        arr.add(1);
                     }else if(r.getString("rt_id").equals("2")){
                         System.out.println("2 - King Bed (Comes With Pull Out Couch)");
+                        arr.add(2);
                     }else if(r.getString("rt_id").equals("3")){
                         System.out.println("3 - Luxury Suit (Comes With Pull Out Couch)");
+                        arr.add(3);
                     }else{
                         System.out.println("4 - Life In The Fast Lane Suite (Comes With Additional Closet Bed and Pull Out Couch)");
+                        arr.add(4);
                     }
                 }while(r.next());
                 /*String num = r.getString("rt_id");
@@ -498,6 +507,7 @@ public class UserInterface{
         catch(Exception e){
             e.printStackTrace();
         }
+        return arr;
     }
 
     /**
@@ -518,9 +528,13 @@ public class UserInterface{
         do{
         //function to display properties and their ids for the clerks use
             pid = pid(scan);
-            displayRoomTypesAvailable(pid);
+            List<Integer> rtArr = displayRoomTypesAvailable(pid);
             System.out.println();
             rtid = rtid(scan);
+            if(!(rtArr.contains(rtid))){
+                System.out.println("Room Type Not Available At Property, Transaction Aborting\n");
+                return null;
+            }
             startDate = date(scan, "Start Date");
             endDate = date(scan, "End Date");
             numPeople = numPeople(scan, rtid);
@@ -948,6 +962,7 @@ public class UserInterface{
             pid = pid(scan);
             date = date(scan, "Today's Date");
             if(!(date.equals(currentDate))){
+                System.out.println("Invalid Date, Transaction Cancelled\n");
                 return null;
             }
             roomNum = roomNumber(scan, pid);
