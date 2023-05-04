@@ -329,6 +329,7 @@ public class UserInterface{
      * @return String for update
      */
     public static String newFreqGuest(Scanner scan, int cid){
+        System.out.println("Customer ID:" + cid + " is now a Member!\n");
         String q = "insert into member values (" + cid + ", " + currentDate + ", " + 0 + ")";
         return q;
     }
@@ -783,6 +784,7 @@ public class UserInterface{
             pid = pid(scan);
             date = date(scan, "the Date of Reservation");
             if(!(date.equals(currentDate))){//invalid checkin date
+                System.out.println("Reservation Date is not Today\n");
                 return null;
             }
             boolean go = false;
@@ -852,8 +854,9 @@ public class UserInterface{
         do{
             resid = resid(scan);
             pid = pid(scan);
-            date = date(scan, "Today's Date");
+            date = date(scan, "Checkout Date");
             if(!date.equals(currentDate)){
+                System.out.println("Check Out Date and Current Date Do Not Match, Unable to Check Out\n");
                 return null;
             }
             roomNum = roomNumber(scan, pid);
@@ -900,14 +903,14 @@ public class UserInterface{
             resid = resid(scan);
             pid = pid(scan);
             date = date(scan, "the Date of Reservation");
-            roomNum = roomNumber(scan, pid);
+            roomNum = 0;
             boolean go = false;
             do{
                 try{
                     System.out.println("\nReservation ID:\t" + resid);
                     System.out.println("Property ID:\t" + pid);
                     System.out.println("Date of Reservation:\t" + date);
-                    System.out.println("Room Number:\t" + roomNum);
+                    //System.out.println("Room Number:\t" + roomNum);
                     System.out.print("\nIs this correct? (y/n):\t");
                     String response = scan.next();
                     response = response.toLowerCase();
@@ -925,7 +928,7 @@ public class UserInterface{
                 }
             }while(!go);
         }while(!bigGo);
-        String q = "begin makeCancel (" + resid + ", " + pid + ", " + date + ", " + roomNum + "); end;";
+        String q = "begin makeCancel (" + resid + ", " + pid + ", '" + date + "', " + roomNum + "); end;";
         return q;
     }
 
