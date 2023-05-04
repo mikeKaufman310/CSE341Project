@@ -112,7 +112,7 @@ public class UserInterface{
         String day = Integer.toString((date.getDayOfMonth()));
         String month = Integer.toString((date.getMonthValue()));
         String year = Integer.toString((date.getYear()));
-        return (month + "-" + day + "-" + year);
+        return (month + "-" + day + "-" + year.substring(2));
     }
 
     /**
@@ -1087,23 +1087,28 @@ public class UserInterface{
                 String response3;
                 response1 = response1.toLowerCase();
                 if(response1.equals("y")){
+                    //scan.next();//buffer clear
                     System.out.print("\nInput Customer Address:\t");
-                    response2 = scan.next(); 
-                    System.out.print("\nInput Customer Name:\t");
-                    response3 = scan.next();
+                    scan.nextLine();//buffer clear
+                    response2 = scan.nextLine(); 
+                    System.out.println("Address: " + response2);
+                    System.out.print("Input Customer Name:\t");
+                    response3 = scan.nextLine();
+                    System.out.println("Name: " + response3);
                     try (
                     Connection con=DriverManager.getConnection("jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241",userName,password);
                     Statement s=con.createStatement();
                     ){
                         ResultSet result;
-                        String q = "select * from customer where customer_name = " + response3  + " and address = " + response2;
+                        String q = "select * from customer where customer_name = '" + response3  + "' and address = '" + response2 + "'";
                         result = s.executeQuery(q);
                         if(!(result.next())){
                             retArr[0] = "-1";
                             retArr[1] = "-1";
                         }else{
-                            q = "select max(c_id) from customer where customer_name = " + response3  + " and address = " + response2;
+                            q = "select max(c_id) from customer where customer_name = '" + response3  + "' and address = '" + response2 + "'";
                             result = s.executeQuery(q);
+                            result.next();
                             response2 = Integer.toString(result.getInt("max(c_id)"));
                             retArr[0] = response2;//String version of cid
                             retArr[1] = response3;
