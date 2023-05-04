@@ -5,7 +5,7 @@ import java.util.*;
 import java.sql.*;
 import java.time.*;
 
-public class UserInterface{
+public class mpk225{
     
     //Fields
     static String password = "";

@@ -1,2 +1,2 @@
-Main-class: UserInterface
+Main-class: mpk225
 Class-Path: ojdbc8.jar

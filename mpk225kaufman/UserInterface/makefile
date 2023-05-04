@@ -4,20 +4,20 @@ mpk225: jar
 
 
 classCompile:
-	javac UserInterface.java
+	javac mpk225.java
 
 jar: classCompile
-	jar cfmv UserInterface.jar Manifest.txt UserInterface.class
+	jar cfmv mpk225.jar Manifest.txt mpk225.class
 
 test:
-	java -jar UserInterface.jar
+	java -jar mpk225.jar
 
 clean:
-	rm UserInterface.class
-	rm UserInterface.jar
+	rm mpk225.class
+	rm mpk225.jar
 
 tester:
-	javac Tester.java UserInterface.java
+	javac Tester.java mpk225.java
 	java Tester
 	rm Tester.class
-	rm UserInterface.class
+	rm mpk225.class
