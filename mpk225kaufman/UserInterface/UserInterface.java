@@ -330,7 +330,7 @@ public class UserInterface{
      */
     public static String newFreqGuest(Scanner scan, int cid){
         System.out.println("Customer ID:" + cid + " is now a Member!\n");
-        String q = "insert into member values (" + cid + ", " + currentDate + ", " + 0 + ")";
+        String q = "insert into member values (" + cid + ", '" + currentDate + "', " + 0 + ")";
         return q;
     }
 
@@ -811,7 +811,7 @@ public class UserInterface{
             }while(!go);
             //figure out room number in stored procedure
         }while(!bigGo);
-        String q = "begin makeCheckIn (" + resid + ", " + pid + ", " + date + "); end;";
+        String q = "begin makeCheckIn (" + resid + ", " + pid + ", '" + date + "'); end;";
         return q;
     }
 
@@ -884,7 +884,7 @@ public class UserInterface{
                 }
             }while(!go);
         }while(!bigGo);
-        String q = "begin makeCheckOut (" + resid + ", " + pid + ", " + date + ", " + roomNum +"); end;";
+        String q = "begin makeCheckOut (" + resid + ", " + pid + ", '" + date + "', " + roomNum +"); end;";
         return q;
     }
 
@@ -974,7 +974,7 @@ public class UserInterface{
                 }
             }while(!go);
         }while(!bigGo);
-        String q = "begin makeTx (" + pid + ", " + date + ", " + cid + ", " + roomNum + "); end;";
+        String q = "begin makeTx (" + pid + ", '" + date + "', " + cid + ", " + roomNum + "); end;";
         return q;
     }
 
